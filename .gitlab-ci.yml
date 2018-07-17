@@ -1,0 +1,7 @@
+image: docker:stable
+
+build:
+    stage: build
+    script:
+        - docker build -t $CI_JOB_ID --pull .
+        - docker run --rm $CI_JOB_ID
