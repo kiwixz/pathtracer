@@ -30,10 +30,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 set(CMAKE_CXX_STANDARD "17")
 set(CMAKE_CXX_STANDARD_REQUIRED "ON")
 
-find_package(glm REQUIRED)
-include_directories(SYSTEM
-    ${GLM_INCLUDE_DIRS}
-)
+#find_package(glm REQUIRED)
+#include_directories(SYSTEM
+#    ${GLM_INCLUDE_DIRS}
+#)
 
 include_directories("${CMAKE_SOURCE_DIR}")
 
@@ -43,5 +43,5 @@ pathtracer_exe("app"
     DEPENDS "pathtrace"
     LIBRARIES
         "pathtrace"
-        ${GLM_LIBRARIES}
+        #${GLM_LIBRARIES}
 )
