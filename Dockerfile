@@ -4,17 +4,15 @@ RUN echo -e "\e[1;97;44m> Installing system packages...\e[0m"  \
     && pacman --color=always --needed --noconfirm -Sy cmake gcc make
 
 RUN echo -e "\e[1;97;44m> Installing dependencies...\e[0m"  \
-    && pacman --color=always --needed --noconfirm -Sy glm
-    #&& vcpkg install
+    && vcpkg install cxxopts
 
 COPY "." "/tmp/repository/"
 WORKDIR "/tmp/repository"
 
-CMD echo -e "\e[1;97;44m> Dumping installed packages...\e[0m"  \
-    && pacman --color=always -Q  \
+CMD echo -e "\e[1;97;44m> Dumping dependencies...\e[0m"  \
     && vcpkg list  \
     \
-    && echo -e "\e[1;97;44m> Building...\e[0m"  \
+    && echo -e "\n\e[1;97;44m> Building...\e[0m"  \
     && mkdir "build"  \
     && cd "build"  \
     && CXXFLAGS="-Werror -fdiagnostics-color=always -isystem /opt/vcpkg/installed/x64-linux/include"  \
