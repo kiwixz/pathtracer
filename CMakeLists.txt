@@ -31,10 +31,8 @@ set(CMAKE_CXX_STANDARD "17")
 set(CMAKE_CXX_STANDARD_REQUIRED "ON")
 
 find_package(fmt REQUIRED)
+find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
-#include_directories(SYSTEM
-#    ${GLM_INCLUDE_DIRS}
-#)
 
 include_directories("${CMAKE_SOURCE_DIR}")
 
@@ -46,7 +44,7 @@ pathtracer_exe("app"
         "pathtrace"
 
         "fmt::fmt"
+        "glm"
         "lodepng"
         "spdlog::spdlog"
-        #${GLM_LIBRARIES}
 )

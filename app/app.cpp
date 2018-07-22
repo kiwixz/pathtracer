@@ -1,4 +1,5 @@
 #include "app/app.h"
+#include "pathtrace/renderer.h"
 #include <cxxopts.hpp>
 #include <lodepng.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -48,7 +49,8 @@ namespace pathtracer {
         std::string input = args["input"].as<std::string>();
         std::string output = args["output"].as<std::string>();
 
-        std::vector<uint8_t> image(640 * 480 * 3, 42);
+        Scene scene;
+        Image image = Renderer{}.render(scene);
 
         lodepng::State state;
         state.info_raw.bitdepth = 8;
@@ -57,7 +59,7 @@ namespace pathtracer {
         state.encoder.zlibsettings.windowsize = 32768;  //
 
         std::vector<uint8_t> png;
-        unsigned err = lodepng::encode(png, image, 640, 480, state);
+        unsigned err = lodepng::encode(png, image.convert_to_24_bits(), image.width(), image.height(), state);
         if (err)
             throw std::runtime_error{"lodepng: "s + lodepng_error_text(err)};
 
