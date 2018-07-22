@@ -44,6 +44,9 @@ pathtracer_exe("app"
     DEPENDS "pathtrace"
     LIBRARIES
         "pathtrace"
-        "fmt::fmt" "spdlog::spdlog"
+
+        "fmt::fmt"
+        "lodepng"
+        "spdlog::spdlog"
         #${GLM_LIBRARIES}
 )
