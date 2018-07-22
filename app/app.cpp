@@ -24,7 +24,7 @@ namespace pathtracer {
 
     void App::main_impl(int argc, const char** argv)
     {
-        cxxopts::Options options("pathtracer");
+        cxxopts::Options options{"pathtracer"};
         // clang-format off
         options.add_options()
             ("i,input", "Input scene filename", cxxopts::value<std::string>())
@@ -34,6 +34,10 @@ namespace pathtracer {
         options.parse_positional({"input", "output"});
         cxxopts::ParseResult args = options.parse(argc, argv);
         if (argc != 1)
-            throw std::runtime_error("too much arguments");
+            throw std::runtime_error{"too much arguments"};
+        if (!args.count("input"))
+            throw std::runtime_error{"no input file"};
+        if (!args.count("output"))
+            throw std::runtime_error{"no output file"};
     }
 }  // namespace pathtracer
