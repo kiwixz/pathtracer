@@ -5,7 +5,7 @@ RUN echo -e "\e[1;97;44m> Installing system packages...\e[0m"  \
 
 SHELL ["/bin/sh", "-l", "-c"]
 RUN echo -e "\e[1;97;44m> Installing dependencies...\e[0m"  \
-    && vcpkg install cxxopts spdlog
+    && vcpkg install cxxopts fmt spdlog
 
 COPY "." "/tmp/repository/"
 WORKDIR "/tmp/repository"

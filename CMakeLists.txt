@@ -30,6 +30,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 set(CMAKE_CXX_STANDARD "17")
 set(CMAKE_CXX_STANDARD_REQUIRED "ON")
 
+find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED)
 #include_directories(SYSTEM
 #    ${GLM_INCLUDE_DIRS}
@@ -43,6 +44,6 @@ pathtracer_exe("app"
     DEPENDS "pathtrace"
     LIBRARIES
         "pathtrace"
-        "spdlog::spdlog"
+        "fmt::fmt" "spdlog::spdlog"
         #${GLM_LIBRARIES}
 )
