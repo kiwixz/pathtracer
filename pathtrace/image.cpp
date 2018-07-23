@@ -17,14 +17,4 @@ namespace pathtracer {
     {
         return height_;
     }
-
-    std::vector<uint8_t> Image::convert_to_24_bits() const
-    {
-        return std::vector<uint8_t>(width_ * height_ * 3, 255);
-    }
-
-    std::vector<uint16_t> Image::convert_to_48_bits() const
-    {
-        return std::vector<uint16_t>(width_ * height_ * 3, 32767);
-    }
 }  // namespace pathtracer

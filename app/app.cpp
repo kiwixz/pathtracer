@@ -59,7 +59,7 @@ namespace pathtracer {
         state.encoder.zlibsettings.windowsize = 32768;  //
 
         std::vector<uint8_t> png;
-        unsigned err = lodepng::encode(png, image.convert_to_24_bits(), image.width(), image.height(), state);
+        unsigned err = lodepng::encode(png, image.convert<uint8_t>(), image.width(), image.height(), state);
         if (err)
             throw std::runtime_error{"lodepng: "s + lodepng_error_text(err)};
 

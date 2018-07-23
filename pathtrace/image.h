@@ -13,8 +13,8 @@ namespace pathtracer {
         int width() const;
         int height() const;
 
-        std::vector<uint8_t> convert_to_24_bits() const;
-        std::vector<uint16_t> convert_to_48_bits() const;
+        template <typename T>
+        std::vector<T> convert(float dithering = 1) const;
 
     private:
         std::vector<glm::vec3> pixels_;
@@ -22,3 +22,5 @@ namespace pathtracer {
         int height_ = 0;
     };
 }  // namespace pathtracer
+
+#include "pathtrace/image.tcc"
