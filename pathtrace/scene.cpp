@@ -11,13 +11,14 @@ namespace pathtracer {
         nlohmann::json json = nlohmann::json::parse(ifs);
         nlohmann::json j;
 
-        j = json["settings"];
-        settings.width = j["width"];
-        settings.height = j["height"];
+        j = json.at("settings");
+        settings.width = j.at("width");
+        settings.height = j.at("height");
     }
 
     void Scene::save_to_file(const std::string& path) const
     {
+        (void)path;
         // TODO
     }
 }  // namespace pathtracer
