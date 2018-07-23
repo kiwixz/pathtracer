@@ -1,6 +1,8 @@
 #pragma once
 
-#include <string_view>
+#include "pathtrace/shape.h"
+#include <string>
+#include <vector>
 
 namespace pathtracer {
     struct Scene {
@@ -11,6 +13,7 @@ namespace pathtracer {
 
 
         Settings settings;
+        std::vector<Shape> shapes;
 
 
         void load_from_file(const std::string& path);
