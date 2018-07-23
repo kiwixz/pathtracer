@@ -50,6 +50,7 @@ namespace pathtracer {
         std::string output = args["output"].as<std::string>();
 
         Scene scene;
+        scene.load_from_file(args["input"].as<std::string>());
         Image image = Renderer{}.render(scene);
 
         lodepng::State state;
@@ -59,7 +60,8 @@ namespace pathtracer {
         state.encoder.zlibsettings.windowsize = 32768;  //
 
         std::vector<uint8_t> png;
-        unsigned err = lodepng::encode(png, image.convert<uint8_t>(), image.width(), image.height(), state);
+        unsigned err = lodepng::encode(
+                png, image.convert<uint8_t>(), image.width(), image.height(), state);
         if (err)
             throw std::runtime_error{"lodepng: "s + lodepng_error_text(err)};
 
