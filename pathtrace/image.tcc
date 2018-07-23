@@ -1,11 +1,14 @@
 #pragma once
 
+#include <algorithm>
+#include <cmath>
+
 namespace pathtracer {
     template <typename T>
     std::vector<T> Image::convert(float dithering) const
     {
         std::vector<float> work_pixels(pixels_.size() * 3);
-        for (int i = 0; i < pixels_.size(); ++i) {
+        for (unsigned i = 0; i < pixels_.size(); ++i) {
             work_pixels[i * 3 + 0] = pixels_[i].r;
             work_pixels[i * 3 + 1] = pixels_[i].g;
             work_pixels[i * 3 + 2] = pixels_[i].b;
