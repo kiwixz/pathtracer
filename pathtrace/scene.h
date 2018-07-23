@@ -11,9 +11,16 @@ namespace pathtracer {
             int height = 0;
         };
 
+        struct Camera {
+            glm::vec3 position;
+            glm::vec3 rotation;
+            float focal;
+        };
+
 
         Settings settings;
-        std::vector<Shape> shapes;
+        Camera camera;
+        std::vector<std::unique_ptr<Shape>> shapes;
 
 
         void load_from_file(const std::string& path);

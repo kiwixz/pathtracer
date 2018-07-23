@@ -8,6 +8,6 @@ namespace pathtracer {
         glm::vec3 position;
         float radius;
 
-        std::optional<float> intersect(const Ray& ray) const;
+        std::optional<float> intersect(const Ray& ray) const override;
     };
 }  // namespace pathtracer
