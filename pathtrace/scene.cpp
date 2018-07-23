@@ -34,6 +34,7 @@ namespace pathtracer {
             mat.reflection = map_reflections.at(j.at("reflection"));
             mat.color = parse_vec3(j.at("color"));
             mat.emission = parse_vec3(j.at("emission"));
+            return mat;
         }
     }  // namespace
 

@@ -9,7 +9,8 @@ namespace pathtracer {
     {
         std::vector<glm::vec3> pixels(scene.settings.width * scene.settings.height);
 
-        glm::mat4 projection = glm::orientate4(scene.camera.position);
+        glm::mat4 projection = glm::yawPitchRoll(
+                scene.camera.rotation.x, scene.camera.rotation.y, scene.camera.rotation.z);
         projection[0][3] = scene.camera.position.x;
         projection[1][3] = scene.camera.position.y;
         projection[2][3] = scene.camera.position.z;
@@ -17,17 +18,18 @@ namespace pathtracer {
         for (int y = 0; y < scene.settings.height; ++y) {
             for (int x = 0; x < scene.settings.width; ++x) {
                 Ray ray{scene.camera.position,
-                        glm::normalize(
-                                glm::vec4{(x / static_cast<float>(scene.settings.width) - .5f)
-                                                  * scene.settings.width / scene.settings.height,
-                                        y / static_cast<float>(scene.settings.height) - .5f,
-                                        scene.camera.focal, 0}
-                                * projection)};
+                        glm::normalize(glm::vec3(
+                                projection
+                                * glm::vec4{(x / static_cast<float>(scene.settings.width) - .5f)
+                                                    * scene.settings.width / scene.settings.height,
+                                          .5f - y / static_cast<float>(scene.settings.height),
+                                          scene.camera.focal, 0}))};
 
                 const Shape* shape = nullptr;
                 float distance = std::numeric_limits<float>::infinity();
                 for (const std::unique_ptr<Shape>& s : scene.shapes) {
                     std::optional<float> dist = s->intersect(ray);
+
                     if (dist && dist < distance) {
                         distance = dist.value();
                         shape = s.get();
@@ -37,7 +39,7 @@ namespace pathtracer {
                 if (shape)
                     pixels[y * scene.settings.width + x] = shape->material.color;
                 else
-                    pixels[y * scene.settings.width + x] = {50, 50, 50};
+                    pixels[y * scene.settings.width + x] = {0, 1, 0};
             }
         }
         return {std::move(pixels), scene.settings.width, scene.settings.height};
