@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pathtrace/shape.h"
+#include <memory>
 #include <string>
 #include <vector>
 

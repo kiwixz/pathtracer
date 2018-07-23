@@ -43,6 +43,8 @@ pathtracer_exe("app"
     LIBRARIES
         "pathtrace"
 
+        "stdc++fs"
+
         "fmt::fmt"
         "glm"
         "lodepng"
