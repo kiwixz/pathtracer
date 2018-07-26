@@ -4,12 +4,14 @@
 #include <vector>
 
 namespace pathtracer {
+    using Color = glm::vec3;
+
     class Image {
     public:
         Image() = default;
-        Image(std::vector<glm::vec3>&& pixels, int width, int height);
+        Image(std::vector<Color>&& pixels, int width, int height);
 
-        const std::vector<glm::vec3>& pixels() const;
+        const std::vector<Color>& pixels() const;
         int width() const;
         int height() const;
 
@@ -17,7 +19,7 @@ namespace pathtracer {
         std::vector<T> convert(float dithering = 1) const;
 
     private:
-        std::vector<glm::vec3> pixels_;
+        std::vector<Color> pixels_;
         int width_ = 0;
         int height_ = 0;
     };

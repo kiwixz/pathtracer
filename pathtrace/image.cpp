@@ -1,11 +1,11 @@
 #include "pathtrace/image.h"
 
 namespace pathtracer {
-    Image::Image(std::vector<glm::vec3>&& pixels, int width, int height) :
+    Image::Image(std::vector<Color>&& pixels, int width, int height) :
         pixels_{std::move(pixels)}, width_{width}, height_{height}
     {}
 
-    const std::vector<glm::vec3>& Image::pixels() const
+    const std::vector<Color>& Image::pixels() const
     {
         return pixels_;
     }
