@@ -5,7 +5,7 @@
 
 namespace pathtracer {
     namespace {
-        glm::vec3 parse_vec3(const nlohmann::json& j)
+        glm::dvec3 parse_vec3(const nlohmann::json& j)
         {
             if (j.size() != 3)
                 throw std::runtime_error{"could not parse vec3: size mismatch"};

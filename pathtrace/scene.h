@@ -14,9 +14,9 @@ namespace pathtracer {
         };
 
         struct Camera {
-            glm::vec3 position;
-            glm::vec3 rotation;
-            float focal;
+            glm::dvec3 position;
+            glm::dvec3 rotation;
+            double focal;
         };
 
 

@@ -17,10 +17,10 @@ namespace pathtracer {
     };
 
     struct Ray {
-        glm::vec3 origin;
-        glm::vec3 direction;
+        glm::dvec3 origin;
+        glm::dvec3 direction;
 
-        Ray(const glm::vec3& origin, const glm::vec3& direction);
+        Ray(const glm::dvec3& origin, const glm::dvec3& direction);
     };
 
     struct Shape {
@@ -29,7 +29,7 @@ namespace pathtracer {
 
         virtual ~Shape() = default;
 
-        virtual std::optional<float> intersect(const Ray& ray) const = 0;
-        virtual glm::vec3 normal(const glm::vec3& intersection) const = 0;
+        virtual std::optional<double> intersect(const Ray& ray) const = 0;
+        virtual glm::dvec3 normal(const glm::dvec3& intersection) const = 0;
     };
 }  // namespace pathtracer
