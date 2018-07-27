@@ -30,5 +30,6 @@ namespace pathtracer {
         virtual ~Shape() = default;
 
         virtual std::optional<float> intersect(const Ray& ray) const = 0;
+        virtual glm::vec3 normal(const glm::vec3& intersection) const = 0;
     };
 }  // namespace pathtracer

@@ -9,5 +9,6 @@ namespace pathtracer {
         float radius;
 
         std::optional<float> intersect(const Ray& ray) const override;
+        glm::vec3 normal(const glm::vec3& intersection) const override;
     };
 }  // namespace pathtracer

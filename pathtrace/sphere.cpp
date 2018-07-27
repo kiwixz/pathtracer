@@ -22,4 +22,9 @@ namespace pathtracer {
 
         return distance;
     }
+
+    glm::vec3 Sphere::normal(const glm::vec3& intersection) const
+    {
+        return glm::normalize(intersection - position);
+    }
 }  // namespace pathtracer
