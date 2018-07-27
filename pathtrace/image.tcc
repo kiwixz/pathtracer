@@ -9,9 +9,8 @@ namespace pathtracer {
     {
         std::vector<float> work_pixels(pixels_.size() * 3);
         for (unsigned i = 0; i < pixels_.size(); ++i) {
-            work_pixels[i * 3 + 0] = pixels_[i].r;
-            work_pixels[i * 3 + 1] = pixels_[i].g;
-            work_pixels[i * 3 + 2] = pixels_[i].b;
+            for (unsigned c = 0; c < 3; ++c)
+                work_pixels[i * 3 + c] = std::clamp(pixels_[i][c], 0.f, 1.f);
         }
 
         auto get_work = [&](int x, int y, int c) -> float& {

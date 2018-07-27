@@ -53,7 +53,7 @@ namespace pathtracer {
                 glm::vec3 d = glm::normalize(u * std::cos(r1) * r2s + v * std::sin(r1) * r2s
                                              + oriented_normal * std::sqrt(1 - r2));
                 return shape.material.emission
-                       + shape.material.color * radiance(Ray(intersection, d), scene, depth + 1);
+                       + shape.material.color * radiance({intersection, d}, scene, depth + 1);
             }
 
             return {0, 1, 0};

@@ -15,6 +15,8 @@ namespace pathtracer {
         int width() const;
         int height() const;
 
+        void clamp(float min = 0, float max = 1);
+
         template <typename T>
         std::vector<T> convert(float dithering = 1) const;
 

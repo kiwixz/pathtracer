@@ -1,4 +1,5 @@
 #include "pathtrace/image.h"
+#include <glm/common.hpp>
 
 namespace pathtracer {
     Image::Image(std::vector<Color>&& pixels, int width, int height) :
@@ -16,5 +17,11 @@ namespace pathtracer {
     int Image::height() const
     {
         return height_;
+    }
+
+    void Image::clamp(float min, float max)
+    {
+        for (glm::vec3& pix : pixels_)
+            glm::clamp(pix, min, max);
     }
 }  // namespace pathtracer
