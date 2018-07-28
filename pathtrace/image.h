@@ -27,4 +27,4 @@ namespace pathtracer {
     };
 }  // namespace pathtracer
 
-#include "pathtrace/image.tcc"
+#include "pathtrace/image.inl"

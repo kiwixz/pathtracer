@@ -22,5 +22,13 @@
     <ClInclude Include="app.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="endian.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="endian.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

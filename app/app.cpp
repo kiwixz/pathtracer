@@ -9,7 +9,7 @@
 
 namespace pathtracer {
     namespace {
-        void full_render(const std::string& input, const std::string& output)
+        void full_render(const std::string& input, const std::string& output, float dithering)
         {
             using namespace std::string_literals;
 
@@ -25,7 +25,7 @@ namespace pathtracer {
 
             std::vector<uint8_t> png;
             unsigned err = lodepng::encode(
-                    png, image.convert<uint8_t>(), image.width(), image.height(), state);
+                    png, image.convert<uint8_t>(dithering), image.width(), image.height(), state);
             if (err)
                 throw std::runtime_error{"lodepng: "s + lodepng_error_text(err)};
 
@@ -61,7 +61,10 @@ namespace pathtracer {
         options.add_options()
             ("i,input", "Input scene filename", cxxopts::value<std::string>())
             ("o,output", "Output image filename", cxxopts::value<std::string>())
-            ("w,watch", "Watch input file for modification instead of exiting")
+            ("w,watch", "Watch input file for modification instead of exiting", cxxopts::value<bool>()->default_value("false"))
+        ;
+        options.add_options("processing")
+            ("d,dithering", "Ratio of dithering", cxxopts::value<float>()->default_value("1.0"))
         ;
         // clang-format on
         options.parse_positional({"input", "output"});
@@ -74,12 +77,13 @@ namespace pathtracer {
         if (!args.count("output"))
             throw std::runtime_error{"no output file"};
 
-        bool watch = args.count("watch");
+        bool watch = args["watch"].as<bool>();
         std::string input = args["input"].as<std::string>();
         std::string output = args["output"].as<std::string>();
+        float dithering = args["dithering"].as<float>();
 
         if (!watch) {
-            full_render(input, output);
+            full_render(input, output, dithering);
             return;
         }
 
@@ -89,7 +93,7 @@ namespace pathtracer {
             std::filesystem::file_time_type new_last = std::filesystem::last_write_time(input);
             if (new_last > last) {
                 try {
-                    full_render(input, output);
+                    full_render(input, output, dithering);
                     logger->info("image written");
                 }
                 catch (const std::exception& ex) {

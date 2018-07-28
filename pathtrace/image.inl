@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 namespace pathtracer {
     template <typename T>
@@ -42,8 +43,8 @@ namespace pathtracer {
         }
 
         std::vector<T> result(work_pixels.size());
-        std::transform(work_pixels.begin(), work_pixels.end(), result.begin(), [&](float n) {
-            int target = static_cast<int>(std::round(n * max));
+        std::transform(work_pixels.begin(), work_pixels.end(), result.begin(), [&](float linear) {
+            int target = static_cast<int>(std::round(linear * max));
             return static_cast<T>(std::clamp(target, 0, max));
         });
         return result;

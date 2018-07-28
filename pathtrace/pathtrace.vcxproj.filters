@@ -45,7 +45,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="image.tcc">
+    <None Include="image.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
