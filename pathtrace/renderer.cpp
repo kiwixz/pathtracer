@@ -6,7 +6,6 @@
 
 namespace pathtracer {
     namespace {
-        constexpr double pi = 3.1415926535897932;
         constexpr Color background_color{0, 0, 0};
 
         double random(double a, double b)
@@ -45,7 +44,7 @@ namespace pathtracer {
 
             switch (shape.material.reflection) {
             case Material::Reflection::diffuse:  // TODO WIP
-                double r1 = random(2 * pi), r2 = random(), r2s = std::sqrt(r2);
+                double r1 = random(glm::two_pi<double>()), r2 = random(), r2s = std::sqrt(r2);
                 glm::dvec3 u = glm::normalize(
                         glm::cross(std::abs(oriented_normal.x) > .1 ? glm::dvec3(0, 1, 0)
                                                                     : glm::dvec3(1, 0, 0),
