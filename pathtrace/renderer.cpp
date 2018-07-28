@@ -79,7 +79,7 @@ namespace pathtracer {
                                                       / scene.settings.height,
                             .5 - y / static_cast<double>(scene.settings.height),
                             scene.camera.focal};
-                    glm::dvec3 eye_to_screen = projection * glm::vec4{point_on_screen, 1};
+                    glm::dvec3 eye_to_screen = projection * glm::dvec4{point_on_screen, 1};
                     Ray ray{scene.camera.position, glm::normalize(eye_to_screen)};
 
                     color += radiance(ray, scene) / static_cast<float>(scene.settings.samples);
