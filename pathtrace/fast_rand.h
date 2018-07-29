@@ -8,12 +8,20 @@ namespace pathtracer {
     public:
         FastRand();
 
-        double operator()();            /// between 0 and 1
-        double operator()(double max);  /// between 0 and max
+        /// returns a number in [0; 1)
+        double operator()();
+
+        /// returns a number in [0; max)
+        double operator()(double max);
+
+        /// returns a number in [min; max)
         double operator()(double min, double max);
 
-        glm::dvec3 sphere();                           /// normalized vector
-        glm::dvec3 hemisphere(const glm::dvec3& ref);  /// normalized vector in hemisphere of ref
+        /// returns a normalized vector
+        glm::dvec3 sphere();
+
+        /// returns a normalized vector in hemisphere of ref
+        glm::dvec3 hemisphere(const glm::dvec3& ref);
 
     private:
         std::mt19937_64 gen_;
