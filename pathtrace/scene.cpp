@@ -49,6 +49,7 @@ namespace pathtracer {
         settings.width = j_settings.at("width");
         settings.height = j_settings.at("height");
         settings.samples = j_settings.at("samples");
+        settings.max_bounces = j_settings.at("max_bounces");
 
         nlohmann::json j_camera = j.at("camera");
         camera.position = parse_vec3(j_camera.at("position"));

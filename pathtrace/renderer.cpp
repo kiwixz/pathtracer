@@ -54,10 +54,12 @@ namespace pathtracer {
         if (!shape_ptr)
             return background_color;
 
-        const Shape& shape = *shape_ptr;
+        const Shape& shape = *shape_ptr;       // for convenience
+        const Material& mat = shape.material;  //
 
-        if (depth > 2)  // TODO russian roulette with color
+        if (depth >= scene.settings.max_bounces)  // TODO russian roulette with color
             return shape.material.emission;
+        ++depth;
 
         glm::dvec3 intersection =
                 ray.origin + ray.direction * (distance - 1e-9);  // TODO justify epsilon
@@ -79,8 +81,7 @@ namespace pathtracer {
                                    + v * std::sin(angle) * normal_deviation_sq
                                    + oriented_normal * std::sqrt(1 - normal_deviation));
 
-            return shape.material.emission
-                   + shape.material.color * radiance({intersection, direction}, scene, depth + 1);
+            return mat.emission + mat.color * radiance({intersection, direction}, scene, depth);
         }
         case Material::Reflection::specular:
         case Material::Reflection::refractive:

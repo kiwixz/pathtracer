@@ -10,7 +10,8 @@ namespace pathtracer {
         struct Settings {
             int width = 0;
             int height = 0;
-            int samples = 0;
+            int samples = 1;
+            int max_bounces = 1;
         };
 
         struct Camera {
