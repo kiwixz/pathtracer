@@ -59,12 +59,13 @@ namespace pathtracer {
         if (depth > 2)  // TODO russian roulette with color
             return shape.material.emission;
 
-        glm::dvec3 intersection = ray.origin + ray.direction * (distance - 1e-9);  // TODO justify epsilon
+        glm::dvec3 intersection =
+                ray.origin + ray.direction * (distance - 1e-9);  // TODO justify epsilon
         glm::dvec3 normal = shape.normal(intersection);
         glm::dvec3 oriented_normal = glm::dot(normal, ray.direction) > 0 ? -normal : normal;
 
         switch (shape.material.reflection) {
-        case Material::Reflection::diffuse:
+        case Material::Reflection::diffuse: {
             double angle = gen_(glm::two_pi<double>());
             double normal_deviation = gen_();
             double normal_deviation_sq = std::sqrt(normal_deviation);
@@ -81,7 +82,11 @@ namespace pathtracer {
             return shape.material.emission
                    + shape.material.color * radiance({intersection, direction}, scene, depth + 1);
         }
-
-        return {0, 1, 0};
+        case Material::Reflection::specular:
+        case Material::Reflection::refractive:
+            return {0, 1, 0};
+        }
+        throw std::runtime_error("unknown material reflection: "
+                                 + std::to_string(static_cast<int>(shape.material.reflection)));
     }
 }  // namespace pathtracer
