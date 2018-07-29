@@ -158,12 +158,46 @@ namespace pathtracer {
     }  // namespace
 
 
-    Image Renderer::render(const Scene& scene, unsigned nr_threads)
+    Image Renderer::render(const Scene& scene, unsigned nr_threads_)
     {
+        int nr_threads = (nr_threads_ ? nr_threads_ : std::thread::hardware_concurrency());
+        if (!nr_threads)
+            throw std::runtime_error{"could not guess number of threads"};
+
         std::vector<Color> pixels(scene.settings.width * scene.settings.height);
-        std::async(std::launch::async, RendererWork{pixels, scene}, 0, scene.settings.width, 0,
-                scene.settings.height)
-                .get();
+        std::vector<std::future<void>> work;
+
+        if (scene.settings.width >= scene.settings.height) {
+            // distribute work by columns
+            if (nr_threads > scene.settings.width)
+                nr_threads = scene.settings.width;
+            int x_min = 0;
+            for (int rem_threads = nr_threads; rem_threads > 1; --rem_threads) {
+                int x_max = x_min + (scene.settings.width - x_min) / rem_threads;
+                work.emplace_back(std::async(std::launch::async, RendererWork{pixels, scene}, x_min,
+                        x_max, 0, scene.settings.height));
+                x_min = x_max;
+            }
+            work.emplace_back(std::async(std::launch::async, RendererWork{pixels, scene}, x_min,
+                    scene.settings.width, 0, scene.settings.height));
+        }
+        else {
+            // distribute work by rows
+            if (nr_threads > scene.settings.height)
+                nr_threads = scene.settings.height;
+            int y_min = 0;
+            for (int rem_threads = nr_threads; rem_threads > 1; --rem_threads) {
+                int y_max = y_min + (scene.settings.height - y_min) / rem_threads;
+                work.emplace_back(std::async(std::launch::async, RendererWork{pixels, scene}, 0,
+                        scene.settings.width, y_min, y_max));
+                y_min = y_max;
+            }
+            work.emplace_back(std::async(std::launch::async, RendererWork{pixels, scene}, 0,
+                    scene.settings.width, y_min, scene.settings.height));
+        }
+
+        for (std::future<void>& future : work)
+            future.get();
         return {std::move(pixels), scene.settings.width, scene.settings.height};
-    }
+    }  // namespace pathtracer
 }  // namespace pathtracer
