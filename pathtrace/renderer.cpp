@@ -74,16 +74,18 @@ namespace pathtracer {
             double angle = gen_(glm::two_pi<double>());
             double normal_deviation = gen_();
             double normal_deviation_sq = std::sqrt(normal_deviation);
+
+            // build unit hemisphere frame: (u, v, oriented_normal)
             glm::dvec3 u = glm::normalize(glm::cross(
                     std::abs(oriented_normal.x) < std::abs(oriented_normal.y) ? glm::dvec3{1, 0, 0}
                                                                               : glm::dvec3{0, 1, 0},
                     oriented_normal));
             glm::dvec3 v = glm::cross(oriented_normal, u);
+
             glm::dvec3 direction =
                     glm::normalize(u * std::cos(angle) * normal_deviation_sq
                                    + v * std::sin(angle) * normal_deviation_sq
                                    + oriented_normal * std::sqrt(1 - normal_deviation));
-
             return mat.emission + mat.color * radiance({intersection, direction}, scene, depth);
         }
         case Material::Reflection::specular:
@@ -91,25 +93,32 @@ namespace pathtracer {
                    + mat.color
                              * radiance({intersection, glm::reflect(ray.direction, normal)}, scene,
                                        depth);
-        case Material::Reflection::refractive: {  // TODO cleanup
+        case Material::Reflection::refractive: {
             Ray reflected = {intersection, glm::reflect(ray.direction, normal)};
             bool into = (normal == oriented_normal);
             double eta_out = 1;   // TODO should be eta of smallest volume containing intersection
             double eta_in = 1.5;  // TODO add to material
             double eta_ratio = into ? eta_out / eta_in : eta_in / eta_out;
-            double ddn = glm::dot(ray.direction, oriented_normal);
-            double cos2t = 1 - eta_ratio * eta_ratio * (1 - ddn * ddn);
-            if (cos2t <= 0)  // total internal reflection
+            double cos_normal = glm::dot(ray.direction, oriented_normal);
+            double cos_transmission_sq = 1 - eta_ratio * eta_ratio * (1 - cos_normal * cos_normal);
+            if (cos_transmission_sq <= 0)  // total internal reflection
                 return mat.emission + mat.color * radiance(reflected, scene, depth);
 
+            double cos_transmission = std::sqrt(cos_transmission_sq);
             Ray refracted = {intersection,
                     glm::normalize(ray.direction * eta_ratio
-                                   - normal * ((into ? 1 : -1) * (ddn * eta_ratio + sqrt(cos2t))))};
+                                   - normal
+                                             * ((cos_normal * eta_ratio + cos_transmission)
+                                                       * (into ? 1 : -1)))};
             double eta_difference = eta_in - eta_out;
             double eta_sum = eta_in + eta_out;
-            double reflection = (eta_difference * eta_difference) / (eta_sum * eta_sum);
-            double c = 1 - (into ? -ddn : glm::dot(refracted.direction, normal));
-            double reflectance = reflection + (1 - reflection) * c * c * c * c * c;
+            double reflectance_normal = (eta_difference * eta_difference) / (eta_sum * eta_sum);
+            double inverted_cos_theta =
+                    1 - (into ? -cos_normal : glm::dot(refracted.direction, normal));
+            double reflectance =
+                    reflectance_normal
+                    + (1 - reflectance_normal)
+                              * std::pow(inverted_cos_theta, 5);  // fresnel schlick approximation
             return mat.emission
                    + mat.color
                              * (gen_() < reflectance ? radiance(reflected, scene, depth)
@@ -117,7 +126,7 @@ namespace pathtracer {
         }
         }
 
-        throw std::runtime_error("unknown material reflection: "
-                                 + std::to_string(static_cast<int>(shape.material.reflection)));
+        throw std::runtime_error(
+                "unknown material reflection: " + std::to_string(static_cast<int>(mat.reflection)));
     }
 }  // namespace pathtracer
