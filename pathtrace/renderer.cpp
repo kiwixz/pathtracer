@@ -45,6 +45,10 @@ namespace pathtracer {
         double distance = std::numeric_limits<double>::infinity();
         for (const std::unique_ptr<Shape>& s : scene.shapes) {
             std::optional<double> new_distance = s->intersect(ray);
+
+            if (new_distance < 1e-9)  // TODO justify epsilon
+                new_distance.reset();
+
             if (new_distance && new_distance < distance) {
                 distance = new_distance.value();
                 shape_ptr = s.get();
@@ -61,8 +65,7 @@ namespace pathtracer {
             return shape.material.emission;
         ++depth;
 
-        glm::dvec3 intersection =
-                ray.origin + ray.direction * (distance - 1e-9);  // TODO justify epsilon
+        glm::dvec3 intersection = ray.origin + ray.direction * distance;
         glm::dvec3 normal = shape.normal(intersection);
         glm::dvec3 oriented_normal = glm::dot(normal, ray.direction) > 0 ? -normal : normal;
 
@@ -84,9 +87,36 @@ namespace pathtracer {
             return mat.emission + mat.color * radiance({intersection, direction}, scene, depth);
         }
         case Material::Reflection::specular:
-        case Material::Reflection::refractive:
-            return {0, 1, 0};
+            return mat.emission
+                   + mat.color
+                             * radiance({intersection, glm::reflect(ray.direction, normal)}, scene,
+                                       depth);
+        case Material::Reflection::refractive: {  // TODO cleanup
+            Ray reflected = {intersection, glm::reflect(ray.direction, normal)};
+            bool into = (normal == oriented_normal);
+            double eta_out = 1;   // TODO should be eta of smallest volume containing intersection
+            double eta_in = 1.5;  // TODO add to material
+            double eta_ratio = into ? eta_out / eta_in : eta_in / eta_out;
+            double ddn = glm::dot(ray.direction, oriented_normal);
+            double cos2t = 1 - eta_ratio * eta_ratio * (1 - ddn * ddn);
+            if (cos2t <= 0)  // total internal reflection
+                return mat.emission + mat.color * radiance(reflected, scene, depth);
+
+            Ray refracted = {intersection,
+                    glm::normalize(ray.direction * eta_ratio
+                                   - normal * ((into ? 1 : -1) * (ddn * eta_ratio + sqrt(cos2t))))};
+            double eta_difference = eta_in - eta_out;
+            double eta_sum = eta_in + eta_out;
+            double reflection = (eta_difference * eta_difference) / (eta_sum * eta_sum);
+            double c = 1 - (into ? -ddn : glm::dot(refracted.direction, normal));
+            double reflectance = reflection + (1 - reflection) * c * c * c * c * c;
+            return mat.emission
+                   + mat.color
+                             * (gen_() < reflectance ? radiance(reflected, scene, depth)
+                                                     : radiance(refracted, scene, depth));
         }
+        }
+
         throw std::runtime_error("unknown material reflection: "
                                  + std::to_string(static_cast<int>(shape.material.reflection)));
     }

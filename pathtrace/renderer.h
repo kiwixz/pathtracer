@@ -9,9 +9,10 @@ namespace pathtracer {
     public:
         Image render(const Scene& scene);
 
+    protected:
+        Color radiance(const Ray& ray, const Scene& scene, int depth = 0);
+
     private:
         FastRand gen_;
-
-        Color radiance(const Ray& ray, const Scene& scene, int depth = 0);
     };
 }  // namespace pathtracer
