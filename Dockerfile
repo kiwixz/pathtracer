@@ -5,7 +5,7 @@ RUN echo -e "\e[1;97;44m> Installing system packages...\e[0m"  \
 
 SHELL ["/bin/sh", "-l", "-c"]
 RUN echo -e "\e[1;97;44m> Installing dependencies...\e[0m"  \
-    && vcpkg install cxxopts fmt lodepng spdlog
+    && vcpkg install cxxopts fmt glm lodepng nlohmann-json spdlog
 
 COPY "." "/tmp/repository/"
 WORKDIR "/tmp/repository"
@@ -16,7 +16,7 @@ CMD echo -e "\e[1;97;44m> Dumping dependencies...\e[0m"  \
     && echo -e "\n\e[1;97;44m> Building...\e[0m"  \
     && mkdir "build"  \
     && cd "build"  \
-    && CXXFLAGS="-Werror -fdiagnostics-color=always -isystem /opt/vcpkg/installed/x64-linux/include -L /opt/vcpkg/installed/x64-linux/lib"  \
+    && CXXFLAGS="-fdiagnostics-color=always -isystem /opt/vcpkg/installed/x64-linux/include -L /opt/vcpkg/installed/x64-linux/lib"  \
         cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" ..  \
     && CLICOLOR_FORCE=1  \
         make -j$(nproc) -Orecurse
