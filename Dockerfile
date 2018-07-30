@@ -14,9 +14,13 @@ CMD echo -e "\e[1;97;44m> Dumping dependencies...\e[0m"  \
     && vcpkg list  \
     \
     && echo -e "\n\e[1;97;44m> Building...\e[0m"  \
-    && mkdir "build"  \
-    && cd "build"  \
-    && CXXFLAGS="-fdiagnostics-color=always -isystem /opt/vcpkg/installed/x64-linux/include -L /opt/vcpkg/installed/x64-linux/lib"  \
-        cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" ..  \
-    && CLICOLOR_FORCE=1  \
-        make -j$(nproc) -Orecurse
+    && export CXXFLAGS="-fdiagnostics-color=always -isystem /opt/vcpkg/installed/x64-linux/include -L /opt/vcpkg/installed/x64-linux/lib"  \
+    && export CLICOLOR_FORCE="1"  \
+    && mkdir -p "build/debug"  \
+    && cd "build/debug"  \
+    && cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=Debug" "../.."  \
+    && make -j$(nproc) -Orecurse  \
+    && mkdir "../release"  \
+    && cd "../release"  \
+    && cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=RelWithDebInfo" "../.."  \
+    && make -j$(nproc) -Orecurse
