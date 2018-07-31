@@ -13,9 +13,10 @@ stages:
 docker:
     stage: docker
     script:
+        - echo -e "\e[1;97;44m > Building docker image... \e[0m"
         - docker build -t "$DOCKER_IMAGE" --pull .
         - |
-            docker run "$DOCKER_IMAGE" /bin/bash -l -c '
+            docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
                 echo -e "\e[1;97;44m > Dumping system packages... \e[0m"
                 pacman --color=always -Q
                 echo -e "\e[1;97;44m > Dumping vcpkg packages... \e[0m"
@@ -25,7 +26,7 @@ docker:
 build:
     stage: build
     script: |
-        docker run "$DOCKER_IMAGE" /bin/bash -l -c '
+        docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
             echo -e "\n\e[1;97;44m > Building... \e[0m"
             export CXXFLAGS="-fdiagnostics-color=always -isystem /opt/vcpkg/installed/x64-linux/include -L /opt/vcpkg/installed/x64-linux/lib"
             export CLICOLOR_FORCE="1"
@@ -39,10 +40,10 @@ build:
             make -j$(nproc) -Orecurse
         '
 
-format:
+post:
     stage: post
     script: |
-        docker run "$DOCKER_IMAGE" /bin/bash -l -c '
+        docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
             echo -e "\e[1;97;44m > Formatting with clang-format... \e[0m"
             ERR=0
             for f in **/*.h **/*.cpp **/*.inl; do
