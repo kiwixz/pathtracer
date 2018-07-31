@@ -3,7 +3,7 @@ FROM kiwixz/arch-vcpkg:2018-07-29
 RUN echo -e "\e[1;97;44m > Installing system packages... \e[0m"  \
     && pacman --color=always --needed --noconfirm -Sy  \
         cmake gcc make  \
-        clang
+        clang diffutils
 
 SHELL ["/bin/sh", "-l", "-c"]
 RUN echo -e "\e[1;97;44m > Installing dependencies... \e[0m"  \

@@ -7,6 +7,7 @@ stages:
     - docker
     - info
     - build
+    - post
 
 
 docker:
@@ -39,4 +40,21 @@ build:
             cd "../release"
             cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=RelWithDebInfo" "../.."
             make -j$(nproc) -Orecurse
+        '
+
+format:
+    stage: post
+    script: |
+        docker run $DOCKER_IMAGE /bin/bash -l -c '
+            echo -e "\e[1;97;44m > Formatting with clang-format... \e[0m"
+            ERR=0
+            for f in **/*.h **/*.cpp **/*.inl; do
+                clang-format "$f" | diff --color=auto "$f" -
+                ERR=$((ERR+$?))
+            done
+            if [[ $ERR -eq 0 ]]; then
+                echo "Already formatted!"
+            else
+                exit $ERR
+            fi
         '
