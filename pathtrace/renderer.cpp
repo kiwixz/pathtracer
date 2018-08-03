@@ -118,7 +118,7 @@ namespace pathtracer {
             case Material::Reflection::refractive: {
                 Ray reflected = {intersection, glm::reflect(ray.direction, normal)};
                 bool into = (normal == oriented_normal);
-                double eta_out = 1;   // TODO should be eta of smallest volume containing intersection
+                constexpr double eta_out = 1;
                 double eta_in = 1.5;  // TODO add to material
                 double eta_ratio = into ? eta_out / eta_in : eta_in / eta_out;
                 double cos_normal = glm::dot(ray.direction, oriented_normal);
@@ -129,8 +129,8 @@ namespace pathtracer {
                 double cos_transmission = std::sqrt(cos_transmission_sq);
                 glm::dvec3 refraction_vec = ray.direction * eta_ratio - normal * ((cos_normal * eta_ratio + cos_transmission) * (into ? 1 : -1));
                 Ray refracted = {intersection, glm::normalize(refraction_vec)};
-                double eta_difference = eta_in - eta_out;
-                double eta_sum = eta_in + eta_out;
+                double eta_difference = eta_out - eta_in;
+                double eta_sum = eta_out + eta_in;
                 double reflectance_normal = (eta_difference * eta_difference) / (eta_sum * eta_sum);
                 double inverted_cos_theta = 1 - (into ? -cos_normal : glm::dot(refracted.direction, normal));
                 double reflectance = reflectance_normal + (1 - reflectance_normal) * std::pow(inverted_cos_theta, 5);  // fresnel schlick approximation
