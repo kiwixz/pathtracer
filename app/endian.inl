@@ -39,10 +39,8 @@ namespace pathtracer::endian {
     template <typename T>
     constexpr T swap(T value)
     {
-        static_assert(
-                std::is_integral_v<T> && !std::is_same_v<T, bool>, "trying to swap invalid type");
-        return static_cast<T>(
-                detail_endian::swap_unsigned(static_cast<std::make_unsigned_t<T>>(value)));
+        static_assert(std::is_integral_v<T> && !std::is_same_v<T, bool>, "trying to swap invalid type");
+        return static_cast<T>(detail_endian::swap_unsigned(static_cast<std::make_unsigned_t<T>>(value)));
     }
 
     template <typename T>

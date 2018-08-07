@@ -13,13 +13,15 @@ namespace pathtracer {
         }
 
 
-        const std::map<std::string, std::function<std::unique_ptr<Shape>(const nlohmann::json&)>>
-                loaders_shape = {{"sphere", [](const nlohmann::json& j) {
-                                      auto shape = std::make_unique<Sphere>();
-                                      shape->position = parse_vec3(j.at("position"));
-                                      shape->radius = j.at("radius");
-                                      return shape;
-                                  }}};
+        using LoaderShape = std::function<std::unique_ptr<Shape>(const nlohmann::json&)>;
+        const std::map<std::string, LoaderShape> loaders_shape = {
+                {"sphere", [](const nlohmann::json& j) {
+                     auto shape = std::make_unique<Sphere>();
+                     shape->position = parse_vec3(j.at("position"));
+                     shape->radius = j.at("radius");
+                     return shape;
+                 }},
+        };
 
         const std::map<std::string, Material::Reflection> map_reflections = {
                 {"diffuse", Material::Reflection::diffuse},

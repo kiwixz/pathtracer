@@ -9,10 +9,9 @@ namespace pathtracer {
     std::vector<T> Image::convert(float dithering) const
     {
         std::vector<float> work_pixels(pixels_.size() * 3);
-        for (unsigned i = 0; i < pixels_.size(); ++i) {
+        for (unsigned i = 0; i < pixels_.size(); ++i)
             for (unsigned c = 0; c < 3; ++c)
                 work_pixels[i * 3 + c] = std::clamp(pixels_[i][c], 0.f, 1.f);
-        }
 
         auto get_work = [&](int x, int y, int c) -> float& {
             return work_pixels[(y * width_ + x) * 3 + c];
