@@ -1,10 +1,10 @@
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/euler_angles.hpp>
-
-#include "pathtrace/fast_rand.h"
 #include "pathtrace/renderer.h"
+#include "pathtrace/fast_rand.h"
 #include <glm/mat4x4.hpp>
 #include <future>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/euler_angles.hpp>
 
 namespace pathtracer {
     namespace {
