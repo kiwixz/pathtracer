@@ -1,6 +1,7 @@
 image: docker:stable
 
 variables:
+    GIT_STRATEGY: "none"
     DOCKER_IMAGE: "gitlab_${CI_PROJECT_NAME}_${CI_PIPELINE_ID}"
 
 stages:
@@ -12,6 +13,8 @@ stages:
 
 docker:
     stage: docker
+    variables:
+        GIT_STRATEGY: "fetch"
     script:
         - echo -e "\e[1;97;44m > Building docker image... \e[0m"
         - docker build -t "$DOCKER_IMAGE" --pull .
