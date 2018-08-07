@@ -8,8 +8,8 @@
 namespace pathtracer {
     struct Scene {
         struct Settings {
-            int width = 0;
-            int height = 0;
+            int width = 1;
+            int height = 1;
             int samples = 1;
             int max_bounces = 1;
         };

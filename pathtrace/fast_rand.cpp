@@ -36,9 +36,4 @@ namespace pathtracer {
         double xy = std::sqrt(1 - u * u);
         return {xy * std::cos(theta), xy * std::sin(theta), u};
     }
-    glm::dvec3 FastRand::hemisphere(const glm::dvec3& ref)
-    {
-        glm::dvec3 vec = sphere();
-        return glm::faceforward(vec, -ref, vec);
-    }
 }  // namespace pathtracer

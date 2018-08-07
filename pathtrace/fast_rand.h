@@ -20,9 +20,6 @@ namespace pathtracer {
         /// returns a normalized vector
         glm::dvec3 sphere();
 
-        /// returns a normalized vector in hemisphere of ref
-        glm::dvec3 hemisphere(const glm::dvec3& ref);
-
     private:
         std::mt19937_64 gen_;
     };

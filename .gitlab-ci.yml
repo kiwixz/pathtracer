@@ -1,7 +1,66 @@
 image: docker:stable
 
+variables:
+    GIT_STRATEGY: "none"
+    DOCKER_IMAGE: "gitlab_${CI_PROJECT_NAME}_${CI_PIPELINE_ID}"
+
+stages:
+    - docker
+    - build
+    - post
+    - cleanup
+
+
+docker:
+    stage: docker
+    variables:
+        GIT_STRATEGY: "fetch"
+    script:
+        - echo -e "\e[1;97;44m > Building docker image... \e[0m"
+        - docker build -t "$DOCKER_IMAGE" --pull .
+        - |
+            docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+                echo -e "\e[1;97;44m > Dumping system packages... \e[0m"
+                pacman --color=always -Q
+                echo -e "\e[1;97;44m > Dumping vcpkg packages... \e[0m"
+                vcpkg list
+            '
+
 build:
     stage: build
+    script: |
+        docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+            echo -e "\n\e[1;97;44m > Building... \e[0m"
+            export CXXFLAGS="-fdiagnostics-color=always -isystem /opt/vcpkg/installed/x64-linux/include -L /opt/vcpkg/installed/x64-linux/lib"
+            export CLICOLOR_FORCE="1"
+            mkdir -p "build/debug"
+            cd "build/debug"
+            cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=Debug" "../.."
+            make -j$(nproc) -Orecurse
+            mkdir "../release"
+            cd "../release"
+            cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=RelWithDebInfo" "../.."
+            make -j$(nproc) -Orecurse
+        '
+
+post:
+    stage: post
+    script: |
+        docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+            echo -e "\e[1;97;44m > Formatting with clang-format... \e[0m"
+            ERR=0
+            for f in **/*.h **/*.cpp **/*.inl; do
+                clang-format "$f" | diff --color=auto "$f" -
+                ERR=$((ERR+$?))
+            done
+            if [[ $ERR -eq 0 ]]; then
+                echo "Already formatted!"
+            else
+                exit $ERR
+            fi
+        '
+
+cleanup:
+    stage: cleanup
     script:
-        - docker build -t $CI_JOB_ID --pull .
-        - docker run --rm $CI_JOB_ID
+        - docker rmi --no-prune "$DOCKER_IMAGE"
