@@ -9,14 +9,27 @@
 
 namespace pathtracer {
     namespace {
-        void full_render(const std::string& input, const std::string& output, float dithering)
+        struct AppArgs {
+            bool help;
+            std::string input;
+            std::string output;
+            bool watch;
+
+            double gamma;
+            bool tag_software;
+            bool tag_source;
+
+            float dithering;
+        };
+
+        void full_render(const AppArgs& args)
         {
             using namespace std::string_literals;
 
             std::shared_ptr<spdlog::logger> logger = spdlog::get("stderr");
 
             Scene scene;
-            scene.load_from_file(input);
+            scene.load_from_file(args.input);
             Image image = Renderer{}.render(scene);
 
             lodepng::State state;
@@ -26,11 +39,11 @@ namespace pathtracer {
             state.encoder.zlibsettings.windowsize = 32768;  //
 
             std::vector<uint8_t> png;
-            unsigned err = lodepng::encode(png, image.convert<uint8_t>(dithering), image.width(), image.height(), state);
+            unsigned err = lodepng::encode(png, image.convert<uint8_t>(args.dithering), image.width(), image.height(), state);
             if (err)
                 throw std::runtime_error{"lodepng: "s + lodepng_error_text(err)};
 
-            std::ofstream ofs{output, std::ios_base::out | std::ios_base::binary};
+            std::ofstream ofs{args.output, std::ios_base::out | std::ios_base::binary};
             if (!ofs)
                 throw std::runtime_error{"could not open output file"};
             ofs.write(reinterpret_cast<const char*>(png.data()), png.size());
@@ -59,44 +72,60 @@ namespace pathtracer {
 
     void App::main_impl(int argc, const char** argv)
     {
+        AppArgs args;
+
         cxxopts::Options options{"pathtracer"};
         // clang-format off
         options.add_options()
-            ("i,input", "Input scene filename", cxxopts::value<std::string>())
-            ("o,output", "Output image filename", cxxopts::value<std::string>())
-            ("w,watch", "Watch input file for modification instead of exiting", cxxopts::value<bool>()->default_value("false"))
+            ("h,help", "Show help", cxxopts::value(args.help)->default_value("false"))
+            ("i,input", "Input scene filename", cxxopts::value(args.input))
+            ("o,output", "Output image filename", cxxopts::value(args.output))
+            ("w,watch", "Watch input file for modification instead of exiting", cxxopts::value(args.watch)->default_value("false"))
         ;
-        options.add_options("processing")
-            ("d,dithering", "Ratio of dithering", cxxopts::value<float>()->default_value("1.0"))
+        options.add_options("metadata")
+            ("gamma", "Fake gamma", cxxopts::value(args.gamma)->default_value("1.0"))
+            ("tag-software", "Allow software tag", cxxopts::value(args.tag_software)->default_value("true"))
+            ("tag-source", "Embed scene as source tag", cxxopts::value(args.tag_source)->default_value("true"))
+        ;
+        options.add_options("rendering")
+            ("dithering", "Ratio of dithering", cxxopts::value(args.dithering)->default_value("1.0"))
         ;
         // clang-format on
-        options.parse_positional({"input", "output"});
 
-        cxxopts::ParseResult args = options.parse(argc, argv);
+        options.parse_positional({"input", "output"});
+        options.positional_help("[INPUT] [OUTPUT]").show_positional_help();
+
+        if (argc == 1) {
+            fmt::print("{}", options.help({}));
+            return;
+        }
+        cxxopts::ParseResult parse = options.parse(argc, argv);
+        if (args.help) {
+            fmt::print("{}", options.help({}));
+            return;
+        }
+
+        // validate arguments
         if (argc != 1)
             throw std::runtime_error{"too much arguments"};
-        if (!args.count("input"))
+        if (!parse.count("input"))
             throw std::runtime_error{"no input file"};
-        if (!args.count("output"))
+        if (!parse.count("output"))
             throw std::runtime_error{"no output file"};
 
-        bool watch = args["watch"].as<bool>();
-        std::string input = args["input"].as<std::string>();
-        std::string output = args["output"].as<std::string>();
-        float dithering = args["dithering"].as<float>();
-
-        if (!watch) {
-            full_render(input, output, dithering);
+        if (!args.watch) {
+            full_render(args);
             return;
         }
 
         std::shared_ptr<spdlog::logger> logger = spdlog::get("stderr");
+        std::filesystem::path input_path = args.input;
         std::filesystem::file_time_type last;
         while (true) {
-            std::filesystem::file_time_type new_last = std::filesystem::last_write_time(input);
+            std::filesystem::file_time_type new_last = std::filesystem::last_write_time(input_path);
             if (new_last > last) {
                 try {
-                    full_render(input, output, dithering);
+                    full_render(args);
                 }
                 catch (const std::exception& ex) {
                     logger->error("exception: {}", ex.what());
