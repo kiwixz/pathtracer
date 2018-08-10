@@ -13,6 +13,8 @@ namespace pathtracer {
         {
             using namespace std::string_literals;
 
+            std::shared_ptr<spdlog::logger> logger = spdlog::get("stderr");
+
             Scene scene;
             scene.load_from_file(input);
             Image image = Renderer{}.render(scene);
@@ -32,6 +34,8 @@ namespace pathtracer {
             if (!ofs)
                 throw std::runtime_error{"could not open output file"};
             ofs.write(reinterpret_cast<const char*>(png.data()), png.size());
+
+            logger->info("image written");
         }
     }  // namespace
 
@@ -93,7 +97,6 @@ namespace pathtracer {
             if (new_last > last) {
                 try {
                     full_render(input, output, dithering);
-                    logger->info("image written");
                 }
                 catch (const std::exception& ex) {
                     logger->error("exception: {}", ex.what());

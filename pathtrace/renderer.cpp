@@ -24,10 +24,6 @@ namespace pathtracer {
             Color radiance(const Ray& ray, int depth = 0);
         };
 
-
-        constexpr Color background_color{0, 0, 0};
-
-
         RendererWork::RendererWork(std::vector<Color>& pixels, const Scene& scene) :
             pixels_{pixels}, scene_{scene}
         {}
@@ -81,7 +77,7 @@ namespace pathtracer {
             }
 
             if (!shape_ptr)
-                return background_color;
+                return scene_.settings.background_color;
 
             const Shape& shape = *shape_ptr;       // for convenience
             const Material& mat = shape.material;  //
@@ -118,8 +114,8 @@ namespace pathtracer {
             case Material::Reflection::refractive: {
                 Ray reflected = {intersection, glm::reflect(ray.direction, normal)};
                 bool into = (normal == oriented_normal);
-                constexpr double eta_out = 1;
-                double eta_in = 1.5;  // TODO add to material
+                constexpr double eta_out = 1;  // indice of refraction of air
+                double eta_in = 1.5;           // TODO add to material
                 double eta_ratio = into ? eta_out / eta_in : eta_in / eta_out;
                 double cos_normal = glm::dot(ray.direction, oriented_normal);
                 double cos_transmission_sq = 1 - eta_ratio * eta_ratio * (1 - cos_normal * cos_normal);
