@@ -1,4 +1,5 @@
 #include "app/app.h"
+#include "app/endian.h"
 #include "pathtrace/renderer.h"
 #include <cxxopts.hpp>
 #include <lodepng.h>
@@ -15,12 +16,14 @@ namespace pathtracer {
             std::string output;
             bool watch;
 
-            double gamma;
+            double gamma = 0;
             bool tag_software;
             bool tag_source;
 
             float dithering;
         };
+
+        constexpr std::string_view version = "(build " __DATE__ " " __TIME__ ")";
 
         void full_render(const AppArgs& args)
         {
@@ -37,6 +40,30 @@ namespace pathtracer {
             state.info_raw.colortype = LodePNGColorType::LCT_RGB;
             state.encoder.zlibsettings.nicematch = 258;     //  for optimal compression
             state.encoder.zlibsettings.windowsize = 32768;  //
+
+            LodePNGInfo& info = state.info_png;
+            if (args.gamma) {
+                uint32_t gamma = static_cast<uint32_t>(1 / args.gamma * 100'000);
+                gamma = endian::host_to_big(gamma);
+                fmt::print("{}, {}\n", args.gamma, gamma);
+                lodepng_chunk_create(&info.unknown_chunks_data[0], &info.unknown_chunks_size[0],
+                                     sizeof(gamma), "gAMA", reinterpret_cast<const uint8_t*>(&gamma));
+            }
+            if (args.tag_software)
+                lodepng_add_text(&info, "Software", fmt::format("pathtrace {}", version).c_str());
+            if (args.tag_source) {
+                // TODO use scene.save_to_json() instead
+                std::ifstream ifs{args.input};
+                if (!ifs)
+                    throw std::runtime_error{"could not open input file"};
+                ifs.seekg(0, std::ios::end);
+                size_t scene_size = ifs.tellg();
+                std::string scene_json(scene_size, '\0');
+                ifs.seekg(0);
+                ifs.read(scene_json.data(), scene_size);
+
+                lodepng_add_text(&info, "Source", scene_json.c_str());
+            }
 
             std::vector<uint8_t> png;
             unsigned err = lodepng::encode(png, image.convert<uint8_t>(args.dithering), image.width(), image.height(), state);
@@ -83,7 +110,7 @@ namespace pathtracer {
             ("w,watch", "Watch input file for modification instead of exiting", cxxopts::value(args.watch)->default_value("false"))
         ;
         options.add_options("metadata")
-            ("gamma", "Fake gamma", cxxopts::value(args.gamma)->default_value("1.0"))
+            ("gamma", "Fake gamma", cxxopts::value(args.gamma))
             ("tag-software", "Allow software tag", cxxopts::value(args.tag_software)->default_value("true"))
             ("tag-source", "Embed scene as source tag", cxxopts::value(args.tag_source)->default_value("true"))
         ;
