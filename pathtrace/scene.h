@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pathtrace/image.h"
 #include "pathtrace/shape.h"
 #include <memory>
 #include <string>
@@ -12,6 +13,7 @@ namespace pathtracer {
             int height = 1;
             int samples = 1;
             int max_bounces = 1;
+            Color background_color;
         };
 
         struct Camera {
