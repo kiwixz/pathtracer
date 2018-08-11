@@ -11,19 +11,24 @@ namespace {
 }
 
 namespace nlohmann {
-    void adl_serializer<Material::Reflection>::to_json(json& j, const ValueType& value)
+    void adl_serializer<Material>::to_json(json& j, const ValueType& value)
     {
         auto it = std::find_if(map_reflections.begin(), map_reflections.end(),
-                               [&](const std::pair<std::string, ValueType>& pair) {
-                                   return pair.second == value;
+                               [&](const std::pair<std::string, Material::Reflection>& pair) {
+                                   return pair.second == value.reflection;
                                });
         if (it == map_reflections.end())
             throw std::runtime_error{"invalid material reflection"};
-        j = it->first;
+
+        j["reflection"] = it->first;
+        j["color"] = value.color;
+        j["emission"] = value.emission;
     }
 
-    void adl_serializer<Material::Reflection>::from_json(const json& j, ValueType& value)
+    void adl_serializer<Material>::from_json(const json& j, ValueType& value)
     {
-        value = map_reflections.at(j);
+        value.reflection = map_reflections.at(j.at("reflection"));
+        value.color = j.at("color");
+        value.emission = j.at("emission");
     }
 }  // namespace nlohmann

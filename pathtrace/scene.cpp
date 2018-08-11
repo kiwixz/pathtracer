@@ -15,15 +15,6 @@ namespace pathtracer {
                      return shape;
                  }},
         };
-
-        Material parse_material(const nlohmann::json& j)
-        {
-            Material mat;
-            mat.reflection = j.at("reflection");
-            mat.color = j.at("color");
-            mat.emission = j.at("emission");
-            return mat;
-        }
     }  // namespace
 
 
@@ -46,7 +37,7 @@ namespace pathtracer {
         nlohmann::json j_shapes = j.at("shapes");
         for (const nlohmann::json& j_shape : j_shapes) {
             std::unique_ptr<Shape> new_shape = loaders_shape.at(j_shape.at("type"))(j_shape);
-            new_shape->material = parse_material(j_shape.at("material"));
+            new_shape->material = j_shape.at("material");
             shapes.emplace_back(std::move(new_shape));
         }
     }
