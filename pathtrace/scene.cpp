@@ -1,23 +1,16 @@
 #include "pathtrace/scene.h"
+#include "pathtrace/serializers.h"
 #include "pathtrace/sphere.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 
 namespace pathtracer {
     namespace {
-        glm::dvec3 parse_vec3(const nlohmann::json& j)
-        {
-            if (j.size() != 3)
-                throw std::runtime_error{"could not parse vec3: size mismatch"};
-            return {j[0], j[1], j[2]};
-        }
-
-
         using LoaderShape = std::function<std::unique_ptr<Shape>(const nlohmann::json&)>;
         const std::map<std::string, LoaderShape> loaders_shape = {
                 {"sphere", [](const nlohmann::json& j) {
                      auto shape = std::make_unique<Sphere>();
-                     shape->position = parse_vec3(j.at("position"));
+                     shape->position = j.at("position");
                      shape->radius = j.at("radius");
                      return shape;
                  }},
@@ -34,8 +27,8 @@ namespace pathtracer {
         {
             Material mat;
             mat.reflection = map_reflections.at(j.at("reflection"));
-            mat.color = parse_vec3(j.at("color"));
-            mat.emission = parse_vec3(j.at("emission"));
+            mat.color = j.at("color");
+            mat.emission = j.at("emission");
             return mat;
         }
     }  // namespace
@@ -52,11 +45,11 @@ namespace pathtracer {
         settings.height = j_settings.at("height");
         settings.samples = j_settings.at("samples");
         settings.max_bounces = j_settings.at("max_bounces");
-        settings.background_color = parse_vec3(j_settings.at("background_color"));
+        settings.background_color = j_settings.at("background_color");
 
         nlohmann::json j_camera = j.at("camera");
-        camera.position = parse_vec3(j_camera.at("position"));
-        camera.rotation = glm::radians(parse_vec3(j_camera.at("rotation")));
+        camera.position = j_camera.at("position");
+        camera.rotation = glm::radians(j_camera.at("rotation").get<glm::dvec3>());
         camera.fov = glm::radians(j_camera.at("fov").get<double>());
 
         for (const nlohmann::json& j_shape : j.at("shapes")) {

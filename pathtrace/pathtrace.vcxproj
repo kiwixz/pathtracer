@@ -158,11 +158,13 @@
     <ClInclude Include="fast_rand.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="serializers.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="sphere.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="image.inl" />
+    <None Include="serializers.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
