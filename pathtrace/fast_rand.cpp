@@ -3,6 +3,7 @@
 #include <glm/gtc/constants.hpp>
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <functional>
 
 namespace pathtracer {
