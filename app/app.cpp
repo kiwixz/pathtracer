@@ -60,17 +60,7 @@ namespace pathtracer {
             if (args.tag_software)
                 lodepng_add_text(&info, "Software", fmt::format("pathtrace {}", version).c_str());
             if (args.tag_source) {
-                // TODO use scene.save_to_json() instead
-                std::ifstream ifs{args.input};
-                if (!ifs)
-                    throw std::runtime_error{"could not open input file"};
-                ifs.seekg(0, std::ios::end);
-                size_t scene_size = ifs.tellg();
-                std::string scene_json(scene_size, '\0');
-                ifs.seekg(0);
-                ifs.read(scene_json.data(), scene_size);
-
-                lodepng_add_text(&info, "Source", scene_json.c_str());
+                lodepng_add_text(&info, "Source", scene.save_to_json().c_str());
             }
 
             std::vector<uint8_t> png;
