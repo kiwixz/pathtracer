@@ -9,8 +9,8 @@
 namespace pathtracer {
     struct Scene {
         struct Settings {
-            int width = 1;
-            int height = 1;
+            int width = 1920;
+            int height = 1080;
             int samples = 1;
             int max_bounces = 1;
             Color background_color;
@@ -19,7 +19,7 @@ namespace pathtracer {
         struct Camera {
             glm::dvec3 position;
             glm::dvec3 rotation;
-            double focal;
+            double fov = 90;
         };
 
 

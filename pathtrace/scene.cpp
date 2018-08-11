@@ -57,7 +57,7 @@ namespace pathtracer {
         nlohmann::json j_camera = j.at("camera");
         camera.position = parse_vec3(j_camera.at("position"));
         camera.rotation = parse_vec3(j_camera.at("rotation"));
-        camera.focal = j_camera.at("focal");
+        camera.fov = j_camera.at("fov");
 
         for (const nlohmann::json& j_shape : j.at("shapes")) {
             std::unique_ptr<Shape> new_shape = loaders_shape.at(j_shape.at("type"))(j_shape);
