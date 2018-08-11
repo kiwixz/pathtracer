@@ -5,11 +5,14 @@
 #include <lodepng.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 
 namespace pathtracer {
     namespace {
+        using ProfClock = std::chrono::high_resolution_clock;
+
         struct AppArgs {
             bool help;
             std::string input;
@@ -33,7 +36,12 @@ namespace pathtracer {
 
             Scene scene;
             scene.load_from_file(args.input);
+
+            logger->info("generating image...");
+            ProfClock::time_point start = ProfClock::now();
             Image image = Renderer{}.render(scene);
+            std::chrono::duration<double> duration = ProfClock::now() - start;
+            logger->info("generated image in {}s", duration.count());
 
             lodepng::State state;
             state.info_raw.bitdepth = 8;
