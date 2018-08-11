@@ -37,22 +37,27 @@ namespace pathtracer {
             projection[1][3] = scene_.camera.position.y;
             projection[2][3] = scene_.camera.position.z;
 
-            double x_delta = 1.0 / scene_.settings.width;
-            double y_delta = 1.0 / scene_.settings.height;
+            double aspect_ratio = scene_.settings.width / static_cast<double>(scene_.settings.height);
+            double fov = 2 * tan(scene_.camera.fov / 2);
+
+            double plane_x_delta = 1.0 / scene_.settings.width;
+            double plane_y_delta = 1.0 / scene_.settings.height;
+            double plane_x_ratio = aspect_ratio * fov;
+            double plane_y_ratio = fov;
 
             for (int y = y_min; y < y_max; ++y) {
                 for (int x = x_min; x < x_max; ++x) {
                     Color& color = pixels_[y * scene_.settings.width + x];
                     color = {0, 0, 0};
-                    glm::dvec3 pixel_on_screen{(x * x_delta - .5) * scene_.settings.width / scene_.settings.height,
-                                               .5 - y * y_delta,
-                                               scene_.camera.focal};
+
+                    glm::dvec3 pixel_on_screen{(x * plane_x_delta - .5) * plane_x_ratio,
+                                               (.5 - y * plane_y_delta) * plane_y_ratio,
+                                               1};
                     for (int i = 0; i < scene_.settings.samples; ++i) {
-                        glm::dvec4 point_on_screen{pixel_on_screen.x + gen_(x_delta),
-                                                   pixel_on_screen.y + gen_(y_delta),
-                                                   pixel_on_screen.z,
-                                                   1};
-                        glm::dvec3 eye_to_screen = projection * point_on_screen;
+                        glm::dvec3 point_on_screen{pixel_on_screen.x + gen_(plane_x_delta) * plane_x_ratio,
+                                                   pixel_on_screen.y + gen_(plane_y_delta) * plane_y_ratio,
+                                                   pixel_on_screen.z};
+                        glm::dvec3 eye_to_screen = projection * glm::dvec4{point_on_screen, 1};
                         Ray ray{scene_.camera.position, glm::normalize(eye_to_screen)};
                         color += radiance(ray) / static_cast<float>(scene_.settings.samples);
                     }
