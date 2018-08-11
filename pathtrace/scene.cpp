@@ -16,17 +16,10 @@ namespace pathtracer {
                  }},
         };
 
-        const std::map<std::string, Material::Reflection> map_reflections = {
-                {"diffuse", Material::Reflection::diffuse},
-                {"specular", Material::Reflection::specular},
-                {"refractive", Material::Reflection::refractive},
-        };
-
-
         Material parse_material(const nlohmann::json& j)
         {
             Material mat;
-            mat.reflection = map_reflections.at(j.at("reflection"));
+            mat.reflection = j.at("reflection");
             mat.color = j.at("color");
             mat.emission = j.at("emission");
             return mat;
