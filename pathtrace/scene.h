@@ -2,6 +2,7 @@
 
 #include "pathtrace/image.h"
 #include "pathtrace/shape.h"
+#include <glm/trigonometric.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -19,7 +20,7 @@ namespace pathtracer {
         struct Camera {
             glm::dvec3 position;
             glm::dvec3 rotation;
-            double fov = 90;
+            double fov = glm::radians(90.0);
         };
 
 

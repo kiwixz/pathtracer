@@ -38,7 +38,7 @@ namespace pathtracer {
             projection[2][3] = scene_.camera.position.z;
 
             double aspect_ratio = scene_.settings.width / static_cast<double>(scene_.settings.height);
-            double fov = 2 * tan(glm::radians(scene_.camera.fov) / 2);
+            double fov = 2 * tan(scene_.camera.fov / 2);
 
             double plane_x_delta = 1.0 / scene_.settings.width;
             double plane_y_delta = 1.0 / scene_.settings.height;
