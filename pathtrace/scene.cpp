@@ -26,12 +26,10 @@ namespace pathtracer {
         }
     }  // namespace
 
-    void Scene::load_from_file(const std::string& path)
+
+    void Scene::load_from_json(const std::string& source)
     {
-        std::ifstream ifs(path);
-        if (!ifs)
-            throw std::runtime_error{"could not open scene file"};
-        nlohmann::json j = nlohmann::json::parse(ifs);
+        nlohmann::json j = nlohmann::json::parse(source);
 
         nlohmann::json j_settings = j.at("settings");
         settings.width = j_settings.at("width");
@@ -45,16 +43,38 @@ namespace pathtracer {
         camera.rotation = glm::radians(j_camera.at("rotation").get<glm::dvec3>());
         camera.fov = glm::radians(j_camera.at("fov").get<double>());
 
-        for (const nlohmann::json& j_shape : j.at("shapes")) {
+        nlohmann::json j_shapes = j.at("shapes");
+        for (const nlohmann::json& j_shape : j_shapes) {
             std::unique_ptr<Shape> new_shape = loaders_shape.at(j_shape.at("type"))(j_shape);
             new_shape->material = parse_material(j_shape.at("material"));
             shapes.emplace_back(std::move(new_shape));
         }
     }
 
-    void Scene::save_to_file(const std::string& path) const
+    void Scene::load_from_file(const std::string& path)
     {
-        (void)path;
-        // TODO
+        std::ifstream ifs{path};
+        if (!ifs)
+            throw std::runtime_error{"could not open scene file"};
+
+        ifs.seekg(0, std::ios::end);
+        size_t scene_size = ifs.tellg();
+        ifs.seekg(0);
+
+        std::string scene_json(scene_size, '\0');
+        ifs.read(scene_json.data(), scene_size);
+
+        return load_from_json(scene_json);
+    }
+
+    std::string Scene::save_to_json(int pretty_indent) const
+    {
+        return {};  // TODO save_to_json
+    }
+
+    void Scene::save_to_file(const std::string& path, int pretty_indent) const
+    {
+        std::ofstream ofs{path};
+        ofs << save_to_json(pretty_indent);
     }
 }  // namespace pathtracer

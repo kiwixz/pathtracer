@@ -29,7 +29,9 @@ namespace pathtracer {
         std::vector<std::unique_ptr<Shape>> shapes;
 
 
+        void load_from_json(const std::string& source);
         void load_from_file(const std::string& path);
-        void save_to_file(const std::string& path) const;
+        std::string save_to_json(int pretty_indent = -1) const;
+        void save_to_file(const std::string& path, int pretty_indent = -1) const;
     };
 }  // namespace pathtracer
