@@ -1,18 +1,34 @@
 #include "pathtrace/serializers.h"
 #include "pathtrace/sphere.h"
+#include <typeindex>
+#include <typeinfo>
+#include <unordered_map>
 
 using namespace pathtracer;
 
 namespace {
-    const std::map<std::string, Material::Reflection> map_reflections = {
+    const std::unordered_map<std::string, Material::Reflection> map_reflections = {
             {"diffuse", Material::Reflection::diffuse},
             {"specular", Material::Reflection::specular},
             {"refractive", Material::Reflection::refractive},
     };
 
+    const std::unordered_map<std::type_index, std::string> map_shape_names = {
+            {typeid(Sphere), "sphere"},
+    };
+    template <typename T>
+    const std::string& shape_name()
+    {
+        return map_shape_names.at(typeid(T));
+    }
+    const std::string& shape_name(const Shape& shape)
+    {
+        return map_shape_names.at(typeid(shape));
+    }
+
     using LoaderShape = std::function<std::unique_ptr<Shape>(const nlohmann::json&)>;
-    const std::map<std::string, LoaderShape> loaders_shape = {
-            {"sphere", [](const nlohmann::json& j) {
+    const std::unordered_map<std::string, LoaderShape> map_shape_loaders = {
+            {shape_name<Sphere>(), [](const nlohmann::json& j) {
                  auto shape = std::make_unique<Sphere>();
                  shape->position = j.at("position");
                  shape->radius = j.at("radius");
@@ -66,7 +82,7 @@ namespace nlohmann {
 
         nlohmann::json j_shapes = j.at("shapes");
         for (const nlohmann::json& j_shape : j_shapes) {
-            std::unique_ptr<Shape> new_shape = loaders_shape.at(j_shape.at("type"))(j_shape);
+            std::unique_ptr<Shape> new_shape = map_shape_loaders.at(j_shape.at("type"))(j_shape);
             new_shape->material = j_shape.at("material");
             value.shapes.emplace_back(std::move(new_shape));
         }
