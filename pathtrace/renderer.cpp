@@ -82,15 +82,18 @@ namespace pathtracer {
         RendererWork::Intersection RendererWork::intersect(const Ray& ray)
         {
             Intersection intersection;
-            for (const std::unique_ptr<Shape>& s : scene_.shapes) {
-                std::optional<double> new_distance = s->intersect(ray);
+            for (const std::unique_ptr<Shape>& shape : scene_.shapes) {
+                if (!shape->aabb().intersect(ray))
+                    continue;
+
+                std::optional<double> new_distance = shape->intersect(ray);
 
                 if (new_distance < 1e-9)  // TODO justify epsilon
                     new_distance.reset();
 
                 if (new_distance && new_distance < intersection.distance) {
                     intersection.distance = new_distance.value();
-                    intersection.shape = s.get();
+                    intersection.shape = shape.get();
                 }
             }
             return intersection;
