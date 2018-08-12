@@ -29,6 +29,9 @@
     <ClCompile Include="fast_rand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="serializers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene.h">
@@ -49,9 +52,15 @@
     <ClInclude Include="fast_rand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="serializers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="image.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="serializers.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

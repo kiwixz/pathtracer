@@ -1,8 +1,8 @@
 #pragma once
 
+#include "pathtrace/image.h"
 #include <algorithm>
 #include <cmath>
-#include <vector>
 
 namespace pathtracer {
     template <typename T>

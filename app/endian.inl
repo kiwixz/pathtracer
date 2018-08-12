@@ -1,5 +1,6 @@
 #pragma once
 
+#include "app/endian.h"
 #include <cstdint>
 #include <type_traits>
 

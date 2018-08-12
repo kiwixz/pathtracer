@@ -150,6 +150,7 @@
     <ClCompile Include="fast_rand.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="scene.cpp" />
+    <ClCompile Include="serializers.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="sphere.cpp" />
   </ItemGroup>
@@ -158,11 +159,13 @@
     <ClInclude Include="fast_rand.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="serializers.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="sphere.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="image.inl" />
+    <None Include="serializers.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
