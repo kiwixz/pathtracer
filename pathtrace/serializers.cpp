@@ -13,26 +13,35 @@ namespace {
             {"refractive", Material::Reflection::refractive},
     };
 
-    const std::unordered_map<std::type_index, std::string> map_shape_names = {
+    const std::unordered_map<std::type_index, std::string> map_shape_types = {
             {typeid(Sphere), "sphere"},
     };
     template <typename T>
-    const std::string& shape_name()
+    const std::string& shape_type()
     {
-        return map_shape_names.at(typeid(T));
+        return map_shape_types.at(typeid(T));
     }
-    const std::string& shape_name(const Shape& shape)
+    const std::string& shape_type(const Shape& shape)
     {
-        return map_shape_names.at(typeid(shape));
+        return map_shape_types.at(typeid(shape));
     }
 
-    using LoaderShape = std::function<std::unique_ptr<Shape>(const nlohmann::json&)>;
-    const std::unordered_map<std::string, LoaderShape> map_shape_loaders = {
-            {shape_name<Sphere>(), [](const nlohmann::json& j) {
+    using ShapeLoader = std::function<std::unique_ptr<Shape>(const nlohmann::json&)>;
+    const std::unordered_map<std::string, ShapeLoader> map_shape_loaders = {
+            {shape_type<Sphere>(), [](const nlohmann::json& j) {
                  auto shape = std::make_unique<Sphere>();
                  shape->position = j.at("position");
                  shape->radius = j.at("radius");
                  return shape;
+             }},
+    };
+
+    using ShapeSaver = std::function<void(const Shape&, nlohmann::json&)>;
+    const std::unordered_map<std::string, ShapeSaver> map_shape_savers = {
+            {shape_type<Sphere>(), [](const Shape& shape_, nlohmann::json& j) {
+                 auto& shape = reinterpret_cast<const Sphere&>(shape_);
+                 j["position"] = shape.position;
+                 j["radius"] = shape.radius;
              }},
     };
 }  // namespace
@@ -63,7 +72,27 @@ namespace nlohmann {
 
     void adl_serializer<Scene>::to_json(json& j, const ValueType& value)
     {
-        // TODO (scene to_json)
+        nlohmann::json& j_settings = j["settings"];
+        j_settings["width"] = value.settings.width;
+        j_settings["height"] = value.settings.height;
+        j_settings["samples"] = value.settings.samples;
+        j_settings["max_bounces"] = value.settings.max_bounces;
+        j_settings["background_color"] = value.settings.background_color;
+
+        nlohmann::json& j_camera = j["camera"];
+        j_camera["position"] = value.camera.position;
+        j_camera["rotation"] = glm::degrees(value.camera.rotation);
+        j_camera["field_of_view"] = glm::degrees(value.camera.field_of_view);
+
+        nlohmann::json& j_shapes = j["shapes"];
+        for (const std::unique_ptr<Shape>& shape : value.shapes) {
+            const std::string type = shape_type(*shape);
+            nlohmann::json j;
+            map_shape_savers.at(type)(*shape, j);
+            j["type"] = type;
+            j["material"] = shape->material;
+            j_shapes.emplace_back(std::move(j));
+        }
     }
 
     void adl_serializer<Scene>::from_json(const json& j, ValueType& value)
