@@ -29,6 +29,8 @@ namespace pathtracer {
         std::vector<std::unique_ptr<Shape>> shapes;
 
 
+        Scene() = default;
+
         void load_from_json(const std::string& source);
         void load_from_file(const std::string& path);
         std::string save_to_json(int pretty_indent = -1) const;

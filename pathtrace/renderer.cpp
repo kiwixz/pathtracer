@@ -16,13 +16,27 @@ namespace pathtracer {
             void operator()(int x_min, int x_max, int y_min, int y_max);
 
         private:
+            struct Intersection {
+                const Shape* shape = nullptr;
+                double distance = std::numeric_limits<double>::infinity();
+
+                Intersection() = default;
+                explicit operator bool() const;
+            };
+
             std::vector<Color>& pixels_;
             const Scene& scene_;
 
             FastRand gen_;
 
+            Intersection intersect(const Ray& ray);
             Color radiance(const Ray& ray, int depth = 0);
         };
+
+        RendererWork::Intersection::operator bool() const
+        {
+            return shape;
+        }
 
         RendererWork::RendererWork(std::vector<Color>& pixels, const Scene& scene) :
             pixels_{pixels}, scene_{scene}
@@ -65,34 +79,38 @@ namespace pathtracer {
             }
         }
 
-        Color RendererWork::radiance(const Ray& ray, int depth)
+        RendererWork::Intersection RendererWork::intersect(const Ray& ray)
         {
-            const Shape* shape_ptr = nullptr;
-            double distance = std::numeric_limits<double>::infinity();
+            Intersection intersection;
             for (const std::unique_ptr<Shape>& s : scene_.shapes) {
                 std::optional<double> new_distance = s->intersect(ray);
 
                 if (new_distance < 1e-9)  // TODO justify epsilon
                     new_distance.reset();
 
-                if (new_distance && new_distance < distance) {
-                    distance = new_distance.value();
-                    shape_ptr = s.get();
+                if (new_distance && new_distance < intersection.distance) {
+                    intersection.distance = new_distance.value();
+                    intersection.shape = s.get();
                 }
             }
+            return intersection;
+        }
 
-            if (!shape_ptr)
+        Color RendererWork::radiance(const Ray& ray, int depth)
+        {
+            Intersection intersection = intersect(ray);
+            if (!intersection)
                 return scene_.settings.background_color;
 
-            const Shape& shape = *shape_ptr;       // for convenience
+            const Shape& shape = *intersection.shape;       // for convenience
             const Material& mat = shape.material;  //
 
             if (depth >= scene_.settings.max_bounces)  // TODO russian roulette with color
                 return shape.material.emission;
             ++depth;
 
-            glm::dvec3 intersection = ray.origin + ray.direction * distance;
-            glm::dvec3 normal = shape.normal(intersection);
+            glm::dvec3 point = ray.origin + ray.direction * intersection.distance;
+            glm::dvec3 normal = shape.normal(point);
             glm::dvec3 oriented_normal = glm::dot(normal, ray.direction) > 0 ? -normal : normal;
 
             switch (shape.material.reflection) {
@@ -112,12 +130,12 @@ namespace pathtracer {
                         u * std::cos(angle) * normal_deviation_sq
                         + v * std::sin(angle) * normal_deviation_sq
                         + oriented_normal * std::sqrt(1 - normal_deviation));
-                return mat.emission + mat.color * radiance({intersection, direction}, depth);
+                return mat.emission + mat.color * radiance({point, direction}, depth);
             }
             case Material::Reflection::specular:
-                return mat.emission + mat.color * radiance({intersection, glm::reflect(ray.direction, normal)}, depth);
+                return mat.emission + mat.color * radiance({point, glm::reflect(ray.direction, normal)}, depth);
             case Material::Reflection::refractive: {
-                Ray reflected = {intersection, glm::reflect(ray.direction, normal)};
+                Ray reflected = {point, glm::reflect(ray.direction, normal)};
                 bool into = (normal == oriented_normal);
                 constexpr double eta_out = 1;  // indice of refraction of air
                 double eta_in = 1.5;           // TODO add to material
@@ -129,7 +147,7 @@ namespace pathtracer {
 
                 double cos_transmission = std::sqrt(cos_transmission_sq);
                 glm::dvec3 refraction_vec = ray.direction * eta_ratio - normal * ((cos_normal * eta_ratio + cos_transmission) * (into ? 1 : -1));
-                Ray refracted = {intersection, glm::normalize(refraction_vec)};
+                Ray refracted = {point, glm::normalize(refraction_vec)};
                 double eta_difference = eta_out - eta_in;
                 double eta_sum = eta_out + eta_in;
                 double reflectance_normal = (eta_difference * eta_difference) / (eta_sum * eta_sum);

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "pathtrace/aabb.h"
+#include "pathtrace/image.h"
+#include "pathtrace/ray.h"
 #include <glm/vec3.hpp>
 #include <optional>
 
@@ -15,13 +17,9 @@ namespace pathtracer {
         Reflection reflection = Reflection::diffuse;
         glm::vec3 emission;
         glm::vec3 color;
-    };
 
-    struct Ray {
-        glm::dvec3 origin;
-        glm::dvec3 direction;
-
-        Ray(const glm::dvec3& origin, const glm::dvec3& direction);
+        Material() = default;
+        Material(Reflection reflection, const Color& emission, const Color& color);
     };
 
     struct Shape {
