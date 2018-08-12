@@ -2,9 +2,15 @@
 #include <glm/geometric.hpp>
 
 namespace pathtracer {
+    Aabb Sphere::aabb() const
+    {
+        double diameter = radius * 2;
+        return {position - radius, glm::dvec3{diameter}};
+    }
+
     std::optional<double> Sphere::intersect(const Ray& ray) const
     {
-        double radius_sq = radius * radius;  // TODO precompute
+        double radius_sq = radius * radius;  // TODO bake
 
         glm::dvec3 vec_to_pos = position - ray.origin;
         double middle = glm::dot(vec_to_pos, ray.direction);

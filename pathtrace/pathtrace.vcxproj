@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="aabb.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="fast_rand.cpp" />
     <ClCompile Include="renderer.cpp" />
@@ -155,6 +156,7 @@
     <ClCompile Include="sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aabb.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="fast_rand.h" />
     <ClInclude Include="renderer.h" />

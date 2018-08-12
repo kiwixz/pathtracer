@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pathtrace/aabb.h"
 #include <glm/vec3.hpp>
 #include <optional>
 
@@ -24,11 +25,11 @@ namespace pathtracer {
     };
 
     struct Shape {
-    public:
         Material material;
 
         virtual ~Shape() = default;
 
+        virtual Aabb aabb() const = 0;
         virtual std::optional<double> intersect(const Ray& ray) const = 0;
         virtual glm::dvec3 normal(const glm::dvec3& intersection) const = 0;
     };
