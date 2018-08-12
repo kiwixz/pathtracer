@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pathtrace/scene.h"
 #include "pathtrace/shape.h"
 #include <glm/vec3.hpp>
 #include <nlohmann/json.hpp>
@@ -15,6 +16,13 @@ namespace nlohmann {
     template <>
     struct adl_serializer<pathtracer::Material> {
         using ValueType = pathtracer::Material;
+        static void to_json(json& j, const ValueType& value);
+        static void from_json(const json& j, ValueType& value);
+    };
+
+    template <>
+    struct adl_serializer<pathtracer::Scene> {
+        using ValueType = pathtracer::Scene;
         static void to_json(json& j, const ValueType& value);
         static void from_json(const json& j, ValueType& value);
     };

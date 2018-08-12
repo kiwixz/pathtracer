@@ -1,45 +1,12 @@
 #include "pathtrace/scene.h"
 #include "pathtrace/serializers.h"
-#include "pathtrace/sphere.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 
 namespace pathtracer {
-    namespace {
-        using LoaderShape = std::function<std::unique_ptr<Shape>(const nlohmann::json&)>;
-        const std::map<std::string, LoaderShape> loaders_shape = {
-                {"sphere", [](const nlohmann::json& j) {
-                     auto shape = std::make_unique<Sphere>();
-                     shape->position = j.at("position");
-                     shape->radius = j.at("radius");
-                     return shape;
-                 }},
-        };
-    }  // namespace
-
-
     void Scene::load_from_json(const std::string& source)
     {
-        nlohmann::json j = nlohmann::json::parse(source);
-
-        nlohmann::json j_settings = j.at("settings");
-        settings.width = j_settings.at("width");
-        settings.height = j_settings.at("height");
-        settings.samples = j_settings.at("samples");
-        settings.max_bounces = j_settings.at("max_bounces");
-        settings.background_color = j_settings.at("background_color");
-
-        nlohmann::json j_camera = j.at("camera");
-        camera.position = j_camera.at("position");
-        camera.rotation = glm::radians(j_camera.at("rotation").get<glm::dvec3>());
-        camera.fov = glm::radians(j_camera.at("fov").get<double>());
-
-        nlohmann::json j_shapes = j.at("shapes");
-        for (const nlohmann::json& j_shape : j_shapes) {
-            std::unique_ptr<Shape> new_shape = loaders_shape.at(j_shape.at("type"))(j_shape);
-            new_shape->material = j_shape.at("material");
-            shapes.emplace_back(std::move(new_shape));
-        }
+        *this = nlohmann::json::parse(source);
     }
 
     void Scene::load_from_file(const std::string& path)
@@ -60,7 +27,8 @@ namespace pathtracer {
 
     std::string Scene::save_to_json(int pretty_indent) const
     {
-        return {};  // TODO save_to_json
+        nlohmann::json j = *this;
+        return j.dump(pretty_indent);
     }
 
     void Scene::save_to_file(const std::string& path, int pretty_indent) const
