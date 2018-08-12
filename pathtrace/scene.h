@@ -20,7 +20,7 @@ namespace pathtracer {
         struct Camera {
             glm::dvec3 position;
             glm::dvec3 rotation;
-            double fov = glm::radians(90.0);
+            double field_of_view = glm::radians(90.0);
         };
 
 
