@@ -108,8 +108,8 @@ namespace pathtracer {
             if (!intersection)
                 return scene_.settings.background_color;
 
-            const Shape& shape = *intersection.shape;  // for convenience
-            const Material& mat = shape.material;      //
+            const Shape& shape = *intersection.shape;
+            const Material& mat = shape.material;
 
             if (depth >= scene_.settings.max_bounces)  // TODO russian roulette with color
                 return shape.material.emission;

@@ -4,8 +4,7 @@
 namespace pathtracer {
     Aabb Sphere::aabb() const
     {
-        double diameter = radius * 2;
-        return {position - radius, glm::dvec3{diameter}};
+        return {position - radius, position + radius};
     }
 
     std::optional<double> Sphere::intersect(const Ray& ray) const

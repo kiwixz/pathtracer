@@ -6,11 +6,11 @@
 
 namespace pathtracer {
     struct Aabb {  /// axis-aligned bounding box
-        glm::dvec3 position;
-        glm::dvec3 size;
+        glm::dvec3 bottom_left;
+        glm::dvec3 top_right;
 
 
-        Aabb(const glm::dvec3& position, const glm::dvec3& size);
+        Aabb(const glm::dvec3& bottom_left, const glm::dvec3& top_right);
 
         /// one_over_ray should be {ray.origin, 1.0 / ray.direction}
         bool intersect(const Ray& one_over_ray) const;
