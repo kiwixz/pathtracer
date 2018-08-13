@@ -85,7 +85,8 @@ namespace pathtracer {
             Ray one_over_ray{ray.origin, 1.0 / ray.direction};
 
             for (const std::unique_ptr<Shape>& shape : scene_.shapes) {
-                if (!shape->aabb().intersect(one_over_ray))
+                std::optional<double> aabb_distance = shape->aabb().intersect(one_over_ray);
+                if (!(aabb_distance && *aabb_distance < intersection.distance))
                     continue;
 
                 std::optional<double> new_distance = shape->intersect(ray);
@@ -93,7 +94,7 @@ namespace pathtracer {
                 if (new_distance < 1e-9)  // TODO justify epsilon
                     new_distance.reset();
 
-                if (new_distance && new_distance < intersection.distance) {
+                if (new_distance && *new_distance < intersection.distance) {
                     intersection.distance = new_distance.value();
                     intersection.shape = shape.get();
                 }

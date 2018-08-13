@@ -1,12 +1,13 @@
 #include "pathtrace/aabb.h"
 #include <glm/geometric.hpp>
+#include <algorithm>
 
 namespace pathtracer {
     Aabb::Aabb(const glm::dvec3& bottom_left, const glm::dvec3& top_right) :
         bottom_left{bottom_left}, top_right{top_right}
     {}
 
-    bool Aabb::intersect(const Ray& one_over_ray) const
+    std::optional<double> Aabb::intersect(const Ray& one_over_ray) const
     {
         const glm::dvec3& min = bottom_left;
         const glm::dvec3& max = top_right;
@@ -17,7 +18,7 @@ namespace pathtracer {
         double tymax = ((one_over_ray.direction.y < 0 ? min : max).y - one_over_ray.origin.y) * one_over_ray.direction.y;
 
         if (tmin > tymax || tymin > tmax)
-            return false;
+            return {};
 
         if (tymin > tmin)
             tmin = tymin;
@@ -27,6 +28,9 @@ namespace pathtracer {
         double tzmin = ((one_over_ray.direction.z < 0 ? max : min).z - one_over_ray.origin.z) * one_over_ray.direction.z;
         double tzmax = ((one_over_ray.direction.z < 0 ? min : max).z - one_over_ray.origin.z) * one_over_ray.direction.z;
 
-        return !(tmin > tzmax || tzmin > tmax);
+        if (tmin > tzmax || tzmin > tmax)
+            return {};
+
+        return std::max(tmin, tzmin);
     }
 }  // namespace pathtracer
