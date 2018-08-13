@@ -12,6 +12,7 @@ namespace pathtracer {
 
         Aabb(const glm::dvec3& position, const glm::dvec3& size);
 
-        std::optional<double> intersect(const Ray& ray) const;
+        /// one_over_ray should be {ray.origin, 1.0 / ray.direction}
+        bool intersect(const Ray& one_over_ray) const;
     };
 }  // namespace pathtracer

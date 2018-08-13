@@ -82,8 +82,10 @@ namespace pathtracer {
         RendererWork::Intersection RendererWork::intersect(const Ray& ray)
         {
             Intersection intersection;
+            Ray one_over_ray{ray.origin, 1.0 / ray.direction};
+
             for (const std::unique_ptr<Shape>& shape : scene_.shapes) {
-                if (!shape->aabb().intersect(ray))
+                if (!shape->aabb().intersect(one_over_ray))
                     continue;
 
                 std::optional<double> new_distance = shape->intersect(ray);
@@ -96,6 +98,7 @@ namespace pathtracer {
                     intersection.shape = shape.get();
                 }
             }
+
             return intersection;
         }
 
@@ -105,8 +108,8 @@ namespace pathtracer {
             if (!intersection)
                 return scene_.settings.background_color;
 
-            const Shape& shape = *intersection.shape;       // for convenience
-            const Material& mat = shape.material;  //
+            const Shape& shape = *intersection.shape;  // for convenience
+            const Material& mat = shape.material;      //
 
             if (depth >= scene_.settings.max_bounces)  // TODO russian roulette with color
                 return shape.material.emission;
