@@ -9,14 +9,14 @@
 namespace pathtracer {
     struct Material {
         enum class Reflection {
-            diffuse,    // default
-            specular,   // mirror
-            refractive  // glass
+            diffuse,     // default
+            specular,    // mirror
+            refractive,  // glass
         };
 
         Reflection reflection = Reflection::diffuse;
-        glm::vec3 emission;
-        glm::vec3 color;
+        Color emission;
+        Color color;
 
         Material() = default;
         Material(Reflection reflection, const Color& emission, const Color& color);
