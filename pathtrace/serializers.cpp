@@ -1,5 +1,5 @@
 #include "pathtrace/serializers.h"
-#include "pathtrace/sphere.h"
+#include "pathtrace/shapes/sphere.h"
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
