@@ -27,7 +27,6 @@ namespace pathtracer {
 
         virtual ~Shape() = default;
 
-        virtual Aabb aabb() const = 0;
         virtual std::optional<double> intersect(const Ray& ray) const = 0;
         virtual glm::dvec3 normal(const glm::dvec3& intersection) const = 0;
     };

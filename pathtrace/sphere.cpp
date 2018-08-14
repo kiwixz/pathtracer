@@ -2,11 +2,6 @@
 #include <glm/geometric.hpp>
 
 namespace pathtracer {
-    Aabb Sphere::aabb() const
-    {
-        return {position - radius, position + radius};
-    }
-
     std::optional<double> Sphere::intersect(const Ray& ray) const
     {
         double radius_sq = radius * radius;  // TODO bake
