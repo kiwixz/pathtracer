@@ -178,6 +178,9 @@ namespace pathtracer {
         if (!nr_threads)
             throw std::runtime_error{"could not guess number of threads"};
 
+        for (const std::unique_ptr<Shape>& shape : scene.shapes)
+            shape->bake();
+
         std::vector<Color> pixels(scene.settings.width * scene.settings.height);
         std::vector<std::future<void>> work;
 
