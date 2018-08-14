@@ -52,12 +52,12 @@ namespace pathtracer {
             projection[2][3] = scene_.camera.position.z;
 
             double aspect_ratio = scene_.settings.width / static_cast<double>(scene_.settings.height);
-            double fov = 2 * tan(scene_.camera.field_of_view / 2);
+            double fov_ratio = 2 * tan(scene_.camera.field_of_view / 2);
 
             double plane_x_delta = 1.0 / scene_.settings.width;
             double plane_y_delta = 1.0 / scene_.settings.height;
-            double plane_x_ratio = aspect_ratio * fov;
-            double plane_y_ratio = fov;
+            double plane_x_ratio = aspect_ratio * fov_ratio;
+            double plane_y_ratio = fov_ratio;
 
             for (int y = y_min; y < y_max; ++y) {
                 for (int x = x_min; x < x_max; ++x) {
@@ -107,8 +107,16 @@ namespace pathtracer {
             const Shape& shape = *intersection.shape;
             const Material& mat = shape.material;
 
-            if (depth >= scene_.settings.max_bounces)  // TODO russian roulette with color
-                return shape.material.emission;
+            Color color = mat.color;
+
+            if (depth >= scene_.settings.min_bounces) {
+                float color_max = std::max(color.x, std::max(color.y, color.z));
+                float survive_probability = color_max * (scene_.settings.max_bounces - depth) / scene_.settings.max_bounces;
+                if (gen_() < survive_probability)
+                    color /= color_max;
+                else
+                    return mat.emission;
+            }
             ++depth;
 
             glm::dvec3 point = ray.origin + ray.direction * intersection.distance;
@@ -132,10 +140,10 @@ namespace pathtracer {
                         u * std::cos(angle) * normal_deviation_sq
                         + v * std::sin(angle) * normal_deviation_sq
                         + oriented_normal * std::sqrt(1 - normal_deviation));
-                return mat.emission + mat.color * radiance({point, direction}, depth);
+                return mat.emission + color * radiance({point, direction}, depth);
             }
             case Material::Reflection::specular:
-                return mat.emission + mat.color * radiance({point, glm::reflect(ray.direction, normal)}, depth);
+                return mat.emission + color * radiance({point, glm::reflect(ray.direction, normal)}, depth);
             case Material::Reflection::refractive: {
                 Ray reflected = {point, glm::reflect(ray.direction, normal)};
                 bool into = (normal == oriented_normal);
@@ -145,7 +153,7 @@ namespace pathtracer {
                 double cos_normal = glm::dot(ray.direction, oriented_normal);
                 double cos_transmission_sq = 1 - eta_ratio * eta_ratio * (1 - cos_normal * cos_normal);
                 if (cos_transmission_sq <= 0)  // total internal reflection
-                    return mat.emission + mat.color * radiance(reflected, depth);
+                    return mat.emission + color * radiance(reflected, depth);
 
                 double cos_transmission = std::sqrt(cos_transmission_sq);
                 glm::dvec3 refraction_vec = ray.direction * eta_ratio - normal * ((cos_normal * eta_ratio + cos_transmission) * (into ? 1 : -1));
@@ -155,7 +163,7 @@ namespace pathtracer {
                 double reflectance_normal = (eta_difference * eta_difference) / (eta_sum * eta_sum);
                 double inverted_cos_theta = 1 - (into ? -cos_normal : glm::dot(refracted.direction, normal));
                 double reflectance = reflectance_normal + (1 - reflectance_normal) * std::pow(inverted_cos_theta, 5);  // fresnel schlick approximation
-                return mat.emission + mat.color * (gen_() < reflectance ? radiance(reflected, depth) : radiance(refracted, depth));
+                return mat.emission + color * (gen_() < reflectance ? radiance(reflected, depth) : radiance(refracted, depth));
             }
             }
 

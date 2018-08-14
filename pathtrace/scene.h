@@ -12,8 +12,9 @@ namespace pathtracer {
         struct Settings {
             int width = 1920;
             int height = 1080;
-            int samples = 1;
-            int max_bounces = 1;
+            int samples = 512;
+            int min_bounces = 4;
+            int max_bounces = 8;
             Color background_color;
         };
 
