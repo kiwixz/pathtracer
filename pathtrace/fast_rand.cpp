@@ -19,7 +19,10 @@ namespace pathtracer {
 
     double FastRand::operator()()
     {
-        return std::ldexp(gen_(), -64);
+        // c++ forbids type punning, so we cant play efficiently smart with ieee754 binary representation
+        // using division instead of std::uniform_real_distribution we lose some precision, but its much faster
+        constexpr auto max = static_cast<double>(std::numeric_limits<uint64_t>::max());
+        return gen_() / max;
     }
     double FastRand::operator()(double max)
     {
@@ -33,7 +36,7 @@ namespace pathtracer {
     glm::dvec3 FastRand::sphere()
     {
         double theta = (*this)(glm::two_pi<double>());
-        double u = (*this)(-1., 1.);
+        double u = (*this)(-1.0, 1.0);
         double xy = std::sqrt(1 - u * u);
         return {xy * std::cos(theta), xy * std::sin(theta), u};
     }
