@@ -6,14 +6,14 @@
 
 namespace pathtracer {
     template <typename T>
-    std::vector<T> Image::convert(float dithering) const
+    std::vector<T> Image::convert(double dithering) const
     {
-        std::vector<float> work_pixels(pixels_.size() * 3);
+        std::vector<double> work_pixels(pixels_.size() * 3);
         for (unsigned i = 0; i < pixels_.size(); ++i)
             for (unsigned c = 0; c < 3; ++c)
-                work_pixels[i * 3 + c] = std::clamp(pixels_[i][c], 0.f, 1.f);
+                work_pixels[i * 3 + c] = std::clamp(pixels_[i][c], 0.0, 1.0);
 
-        auto get_work = [&](int x, int y, int c) -> float& {
+        auto get_work = [&](int x, int y, int c) -> double& {
             return work_pixels[(y * width_ + x) * 3 + c];
         };
 
@@ -23,10 +23,10 @@ namespace pathtracer {
         for (int y = 0; y < height_; ++y) {
             for (int x = 0; x < width_; ++x) {
                 for (int c = 0; c < 3; ++c) {
-                    float old_pix = get_work(x, y, c);
-                    float new_pix = std::round(old_pix * max) / max;
+                    double old_pix = get_work(x, y, c);
+                    double new_pix = std::round(old_pix * max) / max;
                     get_work(x, y, c) = new_pix;
-                    float quant_error = (old_pix - new_pix) * dithering;
+                    double quant_error = (old_pix - new_pix) * dithering;
 
                     if (x < width_ - 1)
                         get_work(x + 1, y, c) += quant_error * 7 / 16;
@@ -42,7 +42,7 @@ namespace pathtracer {
         }
 
         std::vector<T> result(work_pixels.size());
-        std::transform(work_pixels.begin(), work_pixels.end(), result.begin(), [&](float linear) {
+        std::transform(work_pixels.begin(), work_pixels.end(), result.begin(), [&](double linear) {
             int target = static_cast<int>(std::round(linear * max));
             return static_cast<T>(std::clamp(target, 0, max));
         });

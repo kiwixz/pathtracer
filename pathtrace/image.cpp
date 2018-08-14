@@ -19,9 +19,9 @@ namespace pathtracer {
         return height_;
     }
 
-    void Image::clamp(float min, float max)
+    void Image::clamp(double min, double max)
     {
-        for (glm::vec3& pix : pixels_)
+        for (Color& pix : pixels_)
             glm::clamp(pix, min, max);
     }
 }  // namespace pathtracer

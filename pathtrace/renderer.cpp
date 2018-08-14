@@ -73,7 +73,7 @@ namespace pathtracer {
                                                    pixel_on_screen.z};
                         glm::dvec3 eye_to_screen = projection * glm::dvec4{point_on_screen, 1};
                         Ray ray{scene_.camera.position, glm::normalize(eye_to_screen)};
-                        color += radiance(ray) / static_cast<float>(scene_.settings.samples);
+                        color += radiance(ray) / static_cast<double>(scene_.settings.samples);
                     }
                 }
             }
@@ -110,8 +110,8 @@ namespace pathtracer {
             Color color = mat.color;
 
             if (depth >= scene_.settings.min_bounces) {
-                float color_max = std::max(color.x, std::max(color.y, color.z));
-                float survive_probability = color_max * (scene_.settings.max_bounces - depth) / scene_.settings.max_bounces;
+                double color_max = std::max(color.x, std::max(color.y, color.z));
+                double survive_probability = color_max * (scene_.settings.max_bounces - depth) / scene_.settings.max_bounces;
                 if (gen_() < survive_probability)
                     color /= color_max;
                 else
