@@ -17,7 +17,7 @@ namespace pathtracer {
             return work_pixels[(y * width_ + x) * 3 + c];
         };
 
-        constexpr int max = std::numeric_limits<T>::max();
+        constexpr T max = std::numeric_limits<T>::max();
 
         // floyd-steinberg dithering
         for (int y = 0; y < height_; ++y) {
@@ -43,8 +43,8 @@ namespace pathtracer {
 
         std::vector<T> result(work_pixels.size());
         std::transform(work_pixels.begin(), work_pixels.end(), result.begin(), [&](double linear) {
-            int target = static_cast<int>(std::round(linear * max));
-            return static_cast<T>(std::clamp(target, 0, max));
+            T target = static_cast<T>(std::round(linear * max));
+            return static_cast<T>(std::clamp(target, T{}, max));
         });
         return result;
     }
