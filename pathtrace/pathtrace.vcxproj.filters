@@ -9,9 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="shapes">
-      <UniqueIdentifier>{80f23e93-e4b8-482b-b5ea-6697bdec5e34}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scene.cpp">
@@ -39,7 +36,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="shapes\sphere.cpp">
-      <Filter>shapes</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,7 +65,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shapes\sphere.h">
-      <Filter>shapes</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
