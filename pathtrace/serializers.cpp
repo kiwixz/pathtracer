@@ -1,4 +1,5 @@
 #include "pathtrace/serializers.h"
+#include "pathtrace/shapes/mesh.h"
 #include "pathtrace/shapes/plane.h"
 #include "pathtrace/shapes/sphere.h"
 #include <typeindex>
@@ -17,6 +18,7 @@ namespace {
     const std::unordered_map<std::type_index, std::string> map_shape_types = {
             {typeid(shapes::Sphere), "sphere"},
             {typeid(shapes::Plane), "plane"},
+            {typeid(shapes::Mesh), "mesh"},
     };
     template <typename T>
     const std::string& shape_type()
@@ -42,6 +44,14 @@ namespace {
                  shape->rotation = glm::radians(j.at("rotation").get<glm::dvec3>());
                  return shape;
              }},
+            {shape_type<shapes::Mesh>(), [](const nlohmann::json& j) {
+                 auto shape = std::make_unique<shapes::Mesh>();
+                 shape->position = j.at("position");
+                 shape->rotation = glm::radians(j.at("rotation").get<glm::dvec3>());
+                 shape->scale = j.at("scale");
+                 shape->load_obj(j.at("file"));
+                 return shape;
+             }},
     };
 
     using ShapeSaver = std::function<void(const Shape&, nlohmann::json&)>;
@@ -55,6 +65,13 @@ namespace {
                  auto& shape = reinterpret_cast<const shapes::Plane&>(shape_);
                  j["position"] = shape.position;
                  j["rotation"] = glm::degrees(shape.rotation);
+             }},
+            {shape_type<shapes::Mesh>(), [](const Shape& shape_, nlohmann::json& j) {
+                 auto& shape = reinterpret_cast<const shapes::Mesh&>(shape_);
+                 j["position"] = shape.position;
+                 j["rotation"] = glm::degrees(shape.rotation);
+                 j["scale"] = shape.scale;
+                 j["file"] = "unknown";  // TODO should we maybe save filename or save triangles ?
              }},
     };
 }  // namespace

@@ -34,8 +34,11 @@ namespace app {
 
             std::shared_ptr<spdlog::logger> logger = spdlog::get("stderr");
 
+            std::filesystem::path cd = std::filesystem::current_path();
+            std::filesystem::current_path(std::filesystem::path{args.input}.parent_path());  // change directory to load relative mesh files
             pathtrace::Scene scene;
             scene.load_from_file(args.input);
+            std::filesystem::current_path(cd);
 
             logger->info("generating image...");
             ProfClock::time_point start = ProfClock::now();

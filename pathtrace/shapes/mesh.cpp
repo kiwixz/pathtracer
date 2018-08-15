@@ -73,7 +73,5 @@ namespace pathtrace::shapes {
                 triangles.emplace_back(std::move(vertices));
             }
         }
-
-        printf("%llu triangles\n", triangles.size());
     }
 }  // namespace pathtrace::shapes
