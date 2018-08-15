@@ -2,7 +2,7 @@
 
 #include "pathtrace/shape.h"
 
-namespace pathtrace {
+namespace pathtrace::shapes {
     struct Sphere : public Shape {
         glm::dvec3 position;
         double radius;

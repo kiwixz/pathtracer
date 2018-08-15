@@ -1,7 +1,7 @@
 #include "pathtrace/shapes/sphere.h"
 #include <glm/geometric.hpp>
 
-namespace pathtrace {
+namespace pathtrace::shapes {
     void Sphere::bake()
     {
         radius_sq = radius * radius;
