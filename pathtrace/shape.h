@@ -7,6 +7,8 @@
 #include <optional>
 
 namespace pathtrace {
+    struct Shape;
+
     struct Material {
         enum class Reflection {
             diffuse,     // default
@@ -22,13 +24,24 @@ namespace pathtrace {
         Material(Reflection reflection, const Color& emission, const Color& color);
     };
 
+    struct Intersection {
+        const Shape* shape = nullptr;
+        double distance = std::numeric_limits<double>::infinity();
+        glm::dvec3 point;
+        glm::dvec3 normal;
+
+        Intersection() = default;
+        Intersection(const Shape* shape, double distance, const Ray& ray, const glm::dvec3& normal);
+        Intersection(const Shape* shape, double distance, const glm::dvec3& point, const glm::dvec3& normal);
+        explicit operator bool() const;
+    };
+
     struct Shape {
         Material material;
 
         virtual ~Shape() = default;
 
         virtual void bake() = 0;
-        virtual std::optional<double> intersect(const Ray& ray) const = 0;
-        virtual glm::dvec3 normal(const glm::dvec3& intersection) const = 0;
+        virtual Intersection intersect(const Ray& ray) const = 0;
     };
 }  // namespace pathtrace

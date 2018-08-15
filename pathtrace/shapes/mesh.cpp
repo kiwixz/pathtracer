@@ -12,9 +12,6 @@ namespace pathtrace::shapes {
     void Mesh::bake()
     {}
 
-    std::optional<double> Mesh::intersect(const Ray& ray) const
-    {}
-
-    glm::dvec3 Mesh::normal(const glm::dvec3& intersection) const
+    Intersection Mesh::intersect(const Ray& ray) const
     {}
 }  // namespace pathtrace::shapes

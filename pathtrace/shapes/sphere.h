@@ -11,7 +11,6 @@ namespace pathtrace::shapes {
         double radius_sq;
 
         void bake() override;
-        std::optional<double> intersect(const Ray& ray) const override;
-        glm::dvec3 normal(const glm::dvec3& intersection) const override;
+        Intersection intersect(const Ray& ray) const override;
     };
 }  // namespace pathtrace::shapes
