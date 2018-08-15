@@ -10,7 +10,7 @@ namespace pathtrace::shapes {
 
         Triangle() = default;
         Triangle(std::array<glm::dvec3, 3>&& vertices);
-        Intersection intersect(const Ray& ray) const;
+        Intersection intersect(const Ray& ray, const Shape& shape) const;
     };
 
     struct Mesh : public Shape {

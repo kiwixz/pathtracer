@@ -17,9 +17,9 @@ namespace pathtrace::math {
         r[1][1] *= scale.y;
         r[2][2] *= scale.z;
 
-        r[0][3] = translation.x;
-        r[1][3] = translation.y;
-        r[2][3] = translation.z;
+        r[3][0] = translation.x;
+        r[3][1] = translation.y;
+        r[3][2] = translation.z;
 
         return r;
     }
