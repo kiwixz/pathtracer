@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <type_traits>
 
-namespace pathtracer::endian {
+namespace app::endian {
     namespace detail_endian {
         // clang-format off
         constexpr uint8_t swap_unsigned(uint8_t value)
@@ -64,4 +64,4 @@ namespace pathtracer::endian {
     {
         return host_to_little(value);
     }
-}  // namespace pathtracer::endian
+}  // namespace app::endian

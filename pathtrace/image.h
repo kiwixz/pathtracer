@@ -3,7 +3,7 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
-namespace pathtracer {
+namespace pathtrace {
     using Color = glm::dvec3;
 
     class Image {
@@ -25,6 +25,6 @@ namespace pathtracer {
         int width_ = 0;
         int height_ = 0;
     };
-}  // namespace pathtracer
+}  // namespace pathtrace
 
 #include "pathtrace/image.inl"

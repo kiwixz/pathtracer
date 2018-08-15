@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pathtracer {
+namespace app {
     class App {
     public:
         int main(int argc, const char** argv) noexcept;
@@ -8,4 +8,4 @@ namespace pathtracer {
     private:
         void main_impl(int argc, const char** argv);
     };
-}  // namespace pathtracer
+}  // namespace app

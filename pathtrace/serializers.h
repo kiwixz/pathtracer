@@ -14,15 +14,15 @@ namespace nlohmann {
     };
 
     template <>
-    struct adl_serializer<pathtracer::Material> {
-        using ValueType = pathtracer::Material;
+    struct adl_serializer<pathtrace::Material> {
+        using ValueType = pathtrace::Material;
         static void to_json(json& j, const ValueType& value);
         static void from_json(const json& j, ValueType& value);
     };
 
     template <>
-    struct adl_serializer<pathtracer::Scene> {
-        using ValueType = pathtracer::Scene;
+    struct adl_serializer<pathtrace::Scene> {
+        using ValueType = pathtrace::Scene;
         static void to_json(json& j, const ValueType& value);
         static void from_json(const json& j, ValueType& value);
     };

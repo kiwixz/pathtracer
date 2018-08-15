@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace pathtracer {
+namespace pathtrace {
     template <typename T>
     std::vector<T> Image::convert(double dithering) const
     {
@@ -48,4 +48,4 @@ namespace pathtracer {
         });
         return result;
     }
-}  // namespace pathtracer
+}  // namespace pathtrace

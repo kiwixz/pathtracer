@@ -3,12 +3,12 @@
 #include "pathtrace/shape.h"
 
 namespace pathtrace::shapes {
-    struct Sphere : public Shape {
+    struct Plane : public Shape {
         glm::dvec3 position;
-        double radius;
+        glm::dvec3 rotation;
 
         // baked
-        double radius_sq;
+        glm::dvec3 up;
 
         void bake() override;
         std::optional<double> intersect(const Ray& ray) const override;

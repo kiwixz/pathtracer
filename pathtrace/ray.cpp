@@ -1,7 +1,7 @@
 #include "pathtrace/ray.h"
 
-namespace pathtracer {
+namespace pathtrace {
     Ray::Ray(const glm::dvec3& origin, const glm::dvec3& direction) :
         origin{origin}, direction{direction}
     {}
-}  // namespace pathtracer
+}  // namespace pathtrace

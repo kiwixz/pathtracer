@@ -1,10 +1,11 @@
 #include "pathtrace/serializers.h"
+#include "pathtrace/shapes/plane.h"
 #include "pathtrace/shapes/sphere.h"
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
 
-using namespace pathtracer;
+using namespace pathtrace;
 
 namespace {
     const std::unordered_map<std::string, Material::Reflection> map_reflections = {
@@ -14,7 +15,8 @@ namespace {
     };
 
     const std::unordered_map<std::type_index, std::string> map_shape_types = {
-            {typeid(Sphere), "sphere"},
+            {typeid(shapes::Sphere), "sphere"},
+            {typeid(shapes::Plane), "plane"},
     };
     template <typename T>
     const std::string& shape_type()
@@ -28,20 +30,31 @@ namespace {
 
     using ShapeLoader = std::function<std::unique_ptr<Shape>(const nlohmann::json&)>;
     const std::unordered_map<std::string, ShapeLoader> map_shape_loaders = {
-            {shape_type<Sphere>(), [](const nlohmann::json& j) {
-                 auto shape = std::make_unique<Sphere>();
+            {shape_type<shapes::Sphere>(), [](const nlohmann::json& j) {
+                 auto shape = std::make_unique<shapes::Sphere>();
                  shape->position = j.at("position");
                  shape->radius = j.at("radius");
+                 return shape;
+             }},
+            {shape_type<shapes::Plane>(), [](const nlohmann::json& j) {
+                 auto shape = std::make_unique<shapes::Plane>();
+                 shape->position = j.at("position");
+                 shape->rotation = glm::radians(j.at("rotation").get<glm::dvec3>());
                  return shape;
              }},
     };
 
     using ShapeSaver = std::function<void(const Shape&, nlohmann::json&)>;
     const std::unordered_map<std::string, ShapeSaver> map_shape_savers = {
-            {shape_type<Sphere>(), [](const Shape& shape_, nlohmann::json& j) {
-                 auto& shape = reinterpret_cast<const Sphere&>(shape_);
+            {shape_type<shapes::Sphere>(), [](const Shape& shape_, nlohmann::json& j) {
+                 auto& shape = reinterpret_cast<const shapes::Sphere&>(shape_);
                  j["position"] = shape.position;
                  j["radius"] = shape.radius;
+             }},
+            {shape_type<shapes::Plane>(), [](const Shape& shape_, nlohmann::json& j) {
+                 auto& shape = reinterpret_cast<const shapes::Plane&>(shape_);
+                 j["position"] = shape.position;
+                 j["rotation"] = glm::degrees(shape.rotation);
              }},
     };
 }  // namespace
