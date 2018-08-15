@@ -24,5 +24,7 @@ namespace pathtrace::shapes {
 
         void bake() override;
         Intersection intersect(const Ray& ray) const override;
+
+        void load_obj(const std::string& path);
     };
 }  // namespace pathtrace::shapes

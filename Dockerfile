@@ -8,7 +8,7 @@ RUN echo -e "\e[1;97;44m > Installing system packages... \e[0m"  \
         clang diffutils
 
 RUN echo -e "\e[1;97;44m > Installing dependencies... \e[0m"  \
-    && vcpkg install cxxopts fmt glm lodepng nlohmann-json spdlog
+    && vcpkg install cxxopts fmt glm lodepng nlohmann-json spdlog tinyobjloader
 
 COPY "." "/tmp/repository/"
 WORKDIR "/tmp/repository"
