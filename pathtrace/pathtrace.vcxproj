@@ -155,6 +155,7 @@
     <ClCompile Include="serializers.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="shapes\sphere.cpp" />
+    <ClCompile Include="math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aabb.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="serializers.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="shapes\sphere.h" />
+    <ClInclude Include="math.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="image.inl" />

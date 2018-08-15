@@ -1,10 +1,8 @@
 #include "pathtrace/renderer.h"
 #include "pathtrace/fast_rand.h"
-#include <glm/mat4x4.hpp>
+#include "pathtrace/math.h"
+#include <glm/gtc/constants.hpp>
 #include <future>
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/euler_angles.hpp>
 
 namespace pathtrace {
     namespace {
@@ -45,12 +43,7 @@ namespace pathtrace {
         /// max are not inclusive
         void RendererWork::operator()(int x_min, int x_max, int y_min, int y_max)
         {
-            glm::dmat4 projection = glm::yawPitchRoll(
-                    scene_.camera.rotation.x, scene_.camera.rotation.y, scene_.camera.rotation.z);
-            projection[0][3] = scene_.camera.position.x;
-            projection[1][3] = scene_.camera.position.y;
-            projection[2][3] = scene_.camera.position.z;
-
+            glm::dmat4 projection = math::transform(scene_.camera.position, scene_.camera.rotation);
             double aspect_ratio = scene_.settings.width / static_cast<double>(scene_.settings.height);
             double fov_ratio = 2 * tan(scene_.camera.field_of_view / 2);
 
