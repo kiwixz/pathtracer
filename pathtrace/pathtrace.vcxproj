@@ -149,6 +149,7 @@
     <ClCompile Include="aabb.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="fast_rand.cpp" />
+    <ClCompile Include="shapes\plane.cpp" />
     <ClCompile Include="ray.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="scene.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="aabb.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="fast_rand.h" />
+    <ClInclude Include="shapes\plane.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="scene.h" />

@@ -6,7 +6,7 @@
 
 namespace pathtrace {
     namespace {
-        /// keeps references given in constructor
+        /// be careful: keeps references given in constructor
         class RendererWork {
         public:
             RendererWork(std::vector<Color>& pixels, const Scene& scene);
