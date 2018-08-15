@@ -3,7 +3,7 @@
 #include <glm/vec3.hpp>
 #include <random>
 
-namespace pathtracer {
+namespace pathtrace {
     class FastRand {
     public:
         FastRand();
@@ -23,4 +23,4 @@ namespace pathtracer {
     private:
         std::mt19937_64 gen_;
     };
-}  // namespace pathtracer
+}  // namespace pathtrace

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pathtracer::endian {
+namespace app::endian {
     enum class Endianness {
 #ifdef _WIN32
         little = 0,
@@ -27,6 +27,6 @@ namespace pathtracer::endian {
 
     template <typename T>
     constexpr T little_to_host(T value);
-}  // namespace pathtracer::endian
+}  // namespace app::endian
 
 #include "app/endian.inl"

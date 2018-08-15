@@ -4,7 +4,7 @@
 #include <typeinfo>
 #include <unordered_map>
 
-using namespace pathtracer;
+using namespace pathtrace;
 
 namespace {
     const std::unordered_map<std::string, Material::Reflection> map_reflections = {

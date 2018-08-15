@@ -1,7 +1,7 @@
 #include "pathtrace/shapes/sphere.h"
 #include <glm/geometric.hpp>
 
-namespace pathtracer {
+namespace pathtrace {
     void Sphere::bake()
     {
         radius_sq = radius * radius;
@@ -30,4 +30,4 @@ namespace pathtracer {
     {
         return glm::normalize(intersection - position);
     }
-}  // namespace pathtracer
+}  // namespace pathtrace

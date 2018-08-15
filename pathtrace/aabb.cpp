@@ -2,7 +2,7 @@
 #include <glm/geometric.hpp>
 #include <algorithm>
 
-namespace pathtracer {
+namespace pathtrace {
     Aabb::Aabb(const glm::dvec3& bottom_left, const glm::dvec3& top_right) :
         bottom_left{bottom_left}, top_right{top_right}
     {}
@@ -33,4 +33,4 @@ namespace pathtracer {
 
         return std::max(tmin, tzmin);
     }
-}  // namespace pathtracer
+}  // namespace pathtrace

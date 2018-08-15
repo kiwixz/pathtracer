@@ -2,7 +2,7 @@
 
 #include <glm/vec3.hpp>
 
-namespace pathtracer {
+namespace pathtrace {
     struct Ray {
         glm::dvec3 origin;
         glm::dvec3 direction;
@@ -10,4 +10,4 @@ namespace pathtracer {
         Ray() = default;
         Ray(const glm::dvec3& origin, const glm::dvec3& direction);
     };
-}  // namespace pathtracer
+}  // namespace pathtrace

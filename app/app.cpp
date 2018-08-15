@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <fstream>
 
-namespace pathtracer {
+namespace app {
     namespace {
         using ProfClock = std::chrono::high_resolution_clock;
 
@@ -34,12 +34,12 @@ namespace pathtracer {
 
             std::shared_ptr<spdlog::logger> logger = spdlog::get("stderr");
 
-            Scene scene;
+            pathtrace::Scene scene;
             scene.load_from_file(args.input);
 
             logger->info("generating image...");
             ProfClock::time_point start = ProfClock::now();
-            Image image = Renderer{}.render(scene);
+            pathtrace::Image image = pathtrace::Renderer{}.render(scene);
             std::chrono::duration<double> duration = ProfClock::now() - start;
             logger->info("generated image in {}s", duration.count());
 
@@ -160,4 +160,4 @@ namespace pathtracer {
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
     }
-}  // namespace pathtracer
+}  // namespace app

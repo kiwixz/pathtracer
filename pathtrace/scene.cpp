@@ -3,7 +3,7 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 
-namespace pathtracer {
+namespace pathtrace {
     void Scene::load_from_json(const std::string& source)
     {
         *this = nlohmann::json::parse(source);
@@ -36,4 +36,4 @@ namespace pathtracer {
         std::ofstream ofs{path};
         ofs << save_to_json(pretty_indent);
     }
-}  // namespace pathtracer
+}  // namespace pathtrace

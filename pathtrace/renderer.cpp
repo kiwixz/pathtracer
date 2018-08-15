@@ -6,7 +6,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/euler_angles.hpp>
 
-namespace pathtracer {
+namespace pathtrace {
     namespace {
         /// keeps references given in constructor
         class RendererWork {
@@ -220,5 +220,5 @@ namespace pathtracer {
         for (std::future<void>& future : work)
             future.get();
         return {std::move(pixels), scene.settings.width, scene.settings.height};
-    }  // namespace pathtracer
-}  // namespace pathtracer
+    }
+}  // namespace pathtrace

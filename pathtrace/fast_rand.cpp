@@ -6,7 +6,7 @@
 #include <cmath>
 #include <functional>
 
-namespace pathtracer {
+namespace pathtrace {
     FastRand::FastRand()
     {
         // properly seed full state of generator
@@ -40,4 +40,4 @@ namespace pathtracer {
         double xy = std::sqrt(1 - u * u);
         return {xy * std::cos(theta), xy * std::sin(theta), u};
     }
-}  // namespace pathtracer
+}  // namespace pathtrace
