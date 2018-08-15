@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace pathtracer {
-    using Color = glm::vec3;
+    using Color = glm::dvec3;
 
     class Image {
     public:
@@ -15,10 +15,10 @@ namespace pathtracer {
         int width() const;
         int height() const;
 
-        void clamp(float min = 0, float max = 1);
+        void clamp(double min = 0, double max = 1);
 
         template <typename T>
-        std::vector<T> convert(float dithering = 1) const;
+        std::vector<T> convert(double dithering = 1) const;
 
     private:
         std::vector<Color> pixels_;

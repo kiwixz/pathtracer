@@ -1,16 +1,14 @@
-#include "pathtrace/sphere.h"
+#include "pathtrace/shapes/sphere.h"
 #include <glm/geometric.hpp>
 
 namespace pathtracer {
-    Aabb Sphere::aabb() const
+    void Sphere::bake()
     {
-        return {position - radius, position + radius};
+        radius_sq = radius * radius;
     }
 
     std::optional<double> Sphere::intersect(const Ray& ray) const
     {
-        double radius_sq = radius * radius;  // TODO bake
-
         glm::dvec3 vec_to_pos = position - ray.origin;
         double middle = glm::dot(vec_to_pos, ray.direction);
         double distance_middle_center_sq = glm::dot(vec_to_pos, vec_to_pos) - middle * middle;

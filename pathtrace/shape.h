@@ -9,14 +9,14 @@
 namespace pathtracer {
     struct Material {
         enum class Reflection {
-            diffuse,    // default
-            specular,   // mirror
-            refractive  // glass
+            diffuse,     // default
+            specular,    // mirror
+            refractive,  // glass
         };
 
         Reflection reflection = Reflection::diffuse;
-        glm::vec3 emission;
-        glm::vec3 color;
+        Color emission;
+        Color color;
 
         Material() = default;
         Material(Reflection reflection, const Color& emission, const Color& color);
@@ -27,7 +27,7 @@ namespace pathtracer {
 
         virtual ~Shape() = default;
 
-        virtual Aabb aabb() const = 0;
+        virtual void bake() = 0;
         virtual std::optional<double> intersect(const Ray& ray) const = 0;
         virtual glm::dvec3 normal(const glm::dvec3& intersection) const = 0;
     };

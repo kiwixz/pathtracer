@@ -1,5 +1,5 @@
 #include "pathtrace/serializers.h"
-#include "pathtrace/sphere.h"
+#include "pathtrace/shapes/sphere.h"
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
@@ -76,6 +76,7 @@ namespace nlohmann {
         j_settings["width"] = value.settings.width;
         j_settings["height"] = value.settings.height;
         j_settings["samples"] = value.settings.samples;
+        j_settings["min_bounces"] = value.settings.min_bounces;
         j_settings["max_bounces"] = value.settings.max_bounces;
         j_settings["background_color"] = value.settings.background_color;
 
@@ -101,6 +102,7 @@ namespace nlohmann {
         value.settings.width = j_settings.at("width");
         value.settings.height = j_settings.at("height");
         value.settings.samples = j_settings.at("samples");
+        value.settings.min_bounces = j_settings.at("min_bounces");
         value.settings.max_bounces = j_settings.at("max_bounces");
         value.settings.background_color = j_settings.at("background_color");
 

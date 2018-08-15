@@ -7,7 +7,10 @@ namespace pathtracer {
         glm::dvec3 position;
         double radius;
 
-        Aabb aabb() const override;
+        // baked
+        double radius_sq;
+
+        void bake() override;
         std::optional<double> intersect(const Ray& ray) const override;
         glm::dvec3 normal(const glm::dvec3& intersection) const override;
     };

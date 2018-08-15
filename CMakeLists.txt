@@ -3,7 +3,7 @@ project(pathtracer)
 
 
 function ("pathtracer_lib" name)
-    aux_source_directory("${name}" src)
+    file(GLOB_RECURSE src "${name}/*.cpp")
     list(FILTER src EXCLUDE REGEX "stdafx")
     add_library("${name}" "${src}")
 endfunction ()
@@ -14,7 +14,7 @@ function ("pathtracer_exe" name)
         message(FATAL_ERROR "pathtracer_exe: unrecognized options: ${args_UNPARSED_ARGUMENTS}")
     endif ()
 
-    aux_source_directory("${name}" src)
+    file(GLOB_RECURSE src "${name}/*.cpp")
     list(FILTER src EXCLUDE REGEX "stdafx")
     add_executable("${name}" "${src}")
     add_dependencies("${name}" "${args_DEPENDS}")

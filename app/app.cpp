@@ -23,7 +23,7 @@ namespace pathtracer {
             bool tag_software;
             bool tag_source;
 
-            float dithering;
+            double dithering;
         };
 
         constexpr std::string_view version = "(build " __DATE__ " " __TIME__ ")";
