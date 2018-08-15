@@ -66,7 +66,7 @@ namespace pathtracer {
 
                     glm::dvec3 pixel_on_screen{(x * plane_x_delta - .5) * plane_x_ratio,
                                                (.5 - y * plane_y_delta) * plane_y_ratio,
-                                               1};
+                                               -1};
                     for (int i = 0; i < scene_.settings.samples; ++i) {
                         glm::dvec3 point_on_screen{pixel_on_screen.x + gen_(plane_x_delta) * plane_x_ratio,
                                                    pixel_on_screen.y + gen_(plane_y_delta) * plane_y_ratio,
