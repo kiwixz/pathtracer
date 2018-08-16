@@ -102,6 +102,7 @@ namespace pathtrace::shapes {
             for (uint8_t number_of_vertices : shape.mesh.num_face_vertices) {  // iterate over faces
                 assert(number_of_vertices == 3);
                 Triangle triangle;
+                triangle.normal = {0};  // TODO GLM_FORCE_CTOR_INIT
                 int nr_normals = 0;
                 for (int i = 0; i < 3; ++i) {
                     tinyobj::index_t idx = shape.mesh.indices[index_offset + i];
