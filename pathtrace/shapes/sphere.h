@@ -10,6 +10,8 @@ namespace pathtrace::shapes {
         // baked
         double radius_sq;
 
+
+        Sphere() = default;
         void bake() override;
         Intersection intersect(const Ray& ray) const override;
     };

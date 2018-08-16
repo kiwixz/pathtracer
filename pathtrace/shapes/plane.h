@@ -10,6 +10,8 @@ namespace pathtrace::shapes {
         // baked
         glm::dvec3 up;
 
+
+        Plane() = default;
         void bake() override;
         Intersection intersect(const Ray& ray) const override;
     };
