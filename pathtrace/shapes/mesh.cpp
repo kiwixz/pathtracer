@@ -60,7 +60,8 @@ namespace pathtrace::shapes {
                            new_triangle.vertices = {transformation * glm::dvec4{triangle.vertices[0], 1},
                                                     transformation * glm::dvec4{triangle.vertices[1], 1},
                                                     transformation * glm::dvec4{triangle.vertices[2], 1}};
-                           new_triangle.normal = pseudo_transformation * glm::dvec4{triangle.normal, 1};
+                           new_triangle.normal = glm::normalize(glm::dvec3{
+                                   pseudo_transformation * glm::dvec4{triangle.normal, 1}});
 
                            return new_triangle;
                        });
