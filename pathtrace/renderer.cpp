@@ -70,10 +70,6 @@ namespace pathtrace {
 
             for (const std::unique_ptr<Shape>& shape : scene_.shapes) {
                 Intersection new_intersection = shape->intersect(ray);
-
-                if (new_intersection.distance < 1e-9)  // TODO justify epsilon
-                    new_intersection.shape = nullptr;
-
                 if (new_intersection && new_intersection.distance < intersection.distance) {
                     intersection = std::move(new_intersection);
                 }
