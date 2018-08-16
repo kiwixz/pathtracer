@@ -89,7 +89,7 @@ misc:
 pages:
     stage: deploy
     script: |
-        docker run --rm "$DOCKER_IMAGE" --mount type=bind,source="public",target="/mnt/public" /bin/bash -l -c '
+        docker run --rm --mount type=bind,source="public",target="/mnt/public" "$DOCKER_IMAGE" /bin/bash -l -c '
             export CI_COMMIT_REF_SLUG=develop
 
             mkdir -p "build/doc"
