@@ -1,6 +1,6 @@
-#include "app/app.h"
-#include "app/endian.h"
+#include "pathtracer/app.h"
 #include "pathtrace/renderer.h"
+#include "pathtracer/endian.h"
 #include <cxxopts.hpp>
 #include <lodepng.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <fstream>
 
-namespace app {
+namespace pathtracer {
     namespace {
         using ProfClock = std::chrono::high_resolution_clock;
 

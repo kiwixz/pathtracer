@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27825.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "app", "app\app.vcxproj", "{EDB7A15F-D038-4DF1-BE8D-166A19858C95}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pathtracer", "pathtracer\pathtracer.vcxproj", "{EDB7A15F-D038-4DF1-BE8D-166A19858C95}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pathtrace", "pathtrace\pathtrace.vcxproj", "{D2C0D5EE-5CE3-4FA6-A035-E2C4F9D673A7}"
 EndProject

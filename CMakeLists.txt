@@ -40,7 +40,7 @@ include_directories("${CMAKE_SOURCE_DIR}")
 
 pathtracer_lib("pathtrace")
 
-pathtracer_exe("app"
+pathtracer_exe("pathtracer"
     DEPENDS "pathtrace"
     LIBRARIES
         "pathtrace"

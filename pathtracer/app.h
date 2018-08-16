@@ -1,6 +1,6 @@
 #pragma once
 
-namespace app {
+namespace pathtracer {
     class App {
     public:
         int main(int argc, const char** argv) noexcept;
