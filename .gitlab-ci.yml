@@ -8,6 +8,7 @@ stages:
 variables:
     CACHE_DIR: "build/cache"
     DOCKER_IMAGE: "gitlab_${CI_PROJECT_NAME}_${CI_PIPELINE_ID}"
+    REQUIRED_IMAGES: "kiwixz/arch-vcpkg:2018-08-05"
 
 cache:
     key: "$CI_COMMIT_REF_NAME"
@@ -37,7 +38,7 @@ docker:
     script:
         - echo -e "\e[1;97;44m > Saving docker image... \e[0m"
         - mkdir -p "$CACHE_DIR"
-        - docker save -o "$CACHE_DIR/docker.tar" $(docker images -q)
+        - docker save -o "$CACHE_DIR/docker.tar" "$REQUIRED_IMAGES" $(docker history -q "$DOCKER_IMAGE" | grep -v "<")
         - |
             docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
                 echo -e "\e[1;97;44m > Dumping system packages... \e[0m"
@@ -88,15 +89,17 @@ misc:
 
 pages:
     stage: deploy
-    script: |
-        docker run --rm --mount type=bind,source="public",target="/mnt/public" "$DOCKER_IMAGE" /bin/bash -l -c '
-            export CI_COMMIT_REF_SLUG=develop
+    script:
+        - mkdir "public"
+        - |
+            docker run --rm --mount type=bind,source="$(pwd)/public",target="/mnt/public" "$DOCKER_IMAGE" /bin/bash -l -c '
+                export CI_COMMIT_REF_SLUG=develop
 
-            mkdir -p "build/doc"
-            doxygen
-            mkdir "/mnt/public/doc"
-            mv "build/doc/html" "/mnt/public/doc/$CI_COMMIT_REF_SLUG"
-        '
+                mkdir -p "build/doc"
+                doxygen
+                mkdir "/mnt/public/doc"
+                mv "build/doc/html" "/mnt/public/doc/$CI_COMMIT_REF_SLUG"
+            '
     artifacts:
         paths:
             - public
