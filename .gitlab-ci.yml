@@ -7,7 +7,7 @@ variables:
 stages:
     - docker
     - build
-    - post
+    - deploy
     - cleanup
 
 
@@ -26,6 +26,7 @@ docker:
                 vcpkg list
             '
 
+
 build:
     stage: build
     script: |
@@ -43,8 +44,8 @@ build:
             make -j$(nproc) -Orecurse
         '
 
-post:
-    stage: post
+misc:
+    stage: build
     script: |
         docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
             echo -e "\e[1;97;44m > Formatting with clang-format... \e[0m"
@@ -63,6 +64,26 @@ post:
             fi
             exit $err
         '
+
+
+pages:
+    stage: deploy
+    script: |
+        docker run --rm "$DOCKER_IMAGE" --mount type=bind,source="public",target="/mnt/public" /bin/bash -l -c '
+            export CI_COMMIT_REF_SLUG=develop
+
+            mkdir -p "build/doc"
+            doxygen
+            mkdir "/mnt/public/doc"
+            mv "build/doc/html" "/mnt/public/doc/$CI_COMMIT_REF_SLUG"
+        '
+    artifacts:
+        paths:
+            - public
+    #only:
+    #    - master
+    #    - develop
+
 
 cleanup:
     stage: cleanup
