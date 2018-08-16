@@ -1,23 +1,45 @@
 image: docker:stable
 
-variables:
-    GIT_STRATEGY: "none"
-    DOCKER_IMAGE: "gitlab_${CI_PROJECT_NAME}_${CI_PIPELINE_ID}"
-
 stages:
     - docker
     - build
     - deploy
-    - cleanup
+
+variables:
+    GIT_STRATEGY: "none"
+    DOCKER_IMAGE: "gitlab_${CI_PROJECT_NAME}_${CI_PIPELINE_ID}"
+
+cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+        - cache/
+    policy: pull
+
+services:
+    - docker:stable-dind
+
+before_script:
+    - echo -e "\e[1;97;44m > Building docker image... \e[0m"
+    - |
+        if [[ -f "cache/docker.tar" ]]; then
+            docker load -i "cache/docker.tar"
+        fi
+    - docker build -t "$DOCKER_IMAGE" --pull .
 
 
 docker:
     stage: docker
     variables:
         GIT_STRATEGY: "fetch"
+    cache:
+        key: "$CI_COMMIT_REF_NAME"
+        paths:
+            - cache/
+        policy: pull-push
     script:
-        - echo -e "\e[1;97;44m > Building docker image... \e[0m"
-        - docker build -t "$DOCKER_IMAGE" --pull .
+        - echo -e "\e[1;97;44m > Saving docker image... \e[0m"
+        - mkdir -p "cache"
+        - docker save -o "cache/docker.tar" "$DOCKER_IMAGE"
         - |
             docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
                 echo -e "\e[1;97;44m > Dumping system packages... \e[0m"
@@ -83,9 +105,3 @@ pages:
     #only:
     #    - master
     #    - develop
-
-
-cleanup:
-    stage: cleanup
-    script:
-        - docker rmi --no-prune "$DOCKER_IMAGE"
