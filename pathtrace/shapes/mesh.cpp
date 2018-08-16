@@ -52,10 +52,7 @@ namespace pathtrace::shapes {
 
     void Mesh::bake()
     {
-        glm::dvec3 fixed_rotation{-rotation.x,
-                                  rotation.y,
-                                  -rotation.z};
-        glm::dmat4 transformation = math::transform(position, fixed_rotation, scale);
+        glm::dmat4 transformation = math::transform(position, rotation, scale);
         glm::dmat4 pseudo_transformation = glm::transpose(glm::inverse(transformation));  // do not deform normals etc
 
         transformed_triangles.clear();
