@@ -64,4 +64,4 @@ namespace pathtracer::endian {
     {
         return host_to_little(value);
     }
-}  // namespace app::endian
+}  // namespace pathtracer::endian

@@ -8,4 +8,4 @@ namespace pathtracer {
     private:
         void main_impl(int argc, const char** argv);
     };
-}  // namespace app
+}  // namespace pathtracer

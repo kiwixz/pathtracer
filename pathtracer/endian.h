@@ -27,6 +27,6 @@ namespace pathtracer::endian {
 
     template <typename T>
     constexpr T little_to_host(T value);
-}  // namespace app::endian
+}  // namespace pathtracer::endian
 
 #include "pathtracer/endian.inl"
