@@ -13,14 +13,14 @@ variables:
 cache:
     key: "$CI_COMMIT_REF_NAME"
     paths:
-        - $CACHE_DIR/
+        - $CACHE_DIR
     policy: pull
 
 services:
     - docker:stable-dind
 
 before_script:
-    - echo -e "\e[1;97;44m > Building docker image... \e[0m"
+    - echo -e "\n\e[1;97;44m > Building docker image... \e[0m"
     - |
         if [[ -f "$CACHE_DIR/docker.tar" ]]; then
             docker load -i "$CACHE_DIR/docker.tar"
@@ -33,17 +33,17 @@ docker:
     cache:
         key: "$CI_COMMIT_REF_NAME"
         paths:
-            - $CACHE_DIR/
+            - $CACHE_DIR
         policy: pull-push
     script:
-        - echo -e "\e[1;97;44m > Saving docker image... \e[0m"
+        - echo -e "\n\e[1;97;44m > Saving docker image... \e[0m"
         - mkdir -p "$CACHE_DIR"
         - docker save -o "$CACHE_DIR/docker.tar" "$REQUIRED_IMAGES" $(docker history -q "$DOCKER_IMAGE" | grep -v "<")
         - |
             docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
-                echo -e "\e[1;97;44m > Dumping system packages... \e[0m"
+                echo -e "\n\e[1;97;44m > Dumping system packages... \e[0m"
                 pacman --color=always -Q
-                echo -e "\e[1;97;44m > Dumping vcpkg packages... \e[0m"
+                echo -e "\n\e[1;97;44m > Dumping vcpkg packages... \e[0m"
                 vcpkg list
             '
 
@@ -52,13 +52,14 @@ build:
     stage: build
     script: |
         docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
-            echo -e "\n\e[1;97;44m > Building... \e[0m"
             export CXXFLAGS="-fdiagnostics-color=always -isystem /opt/vcpkg/installed/x64-linux/include -L /opt/vcpkg/installed/x64-linux/lib"
             export CLICOLOR_FORCE="1"
+            echo -e "\n\e[1;97;44m > Building debug... \e[0m"
             mkdir -p "build/debug"
             cd "build/debug"
             cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=Debug" "../.."
             make -j$(nproc) -Orecurse
+            echo -e "\n\e[1;97;44m > Building release... \e[0m"
             mkdir "../release"
             cd "../release"
             cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=RelWithDebInfo" "../.."
@@ -89,20 +90,23 @@ misc:
 
 pages:
     stage: deploy
+    before_script:
+        - apk update
+        - apk add doxygen git graphviz ttf-freefont
     script:
-        - mkdir "public"
         - |
-            docker run --rm --mount type=bind,source="$(pwd)/public",target="/mnt/public" "$DOCKER_IMAGE" /bin/bash -l -c '
-                export CI_COMMIT_REF_SLUG=develop
-
+            for branch in feature/misc; do  # TODO add master when ready
+                echo -e "\n\e[1;97;44m > Generating documentation for $branch... \e[0m"
+                git checkout "$branch"
                 mkdir -p "build/doc"
                 doxygen
-                mkdir "/mnt/public/doc"
-                mv "build/doc/html" "/mnt/public/doc/$CI_COMMIT_REF_SLUG"
-            '
+                mkdir -p "build/public/$branch"
+                mv "build/doc/html" "build/public/$branch/doc"
+            done
+        - mv "build/public" "public"
     artifacts:
         paths:
             - public
     #only:
-    #    - master
     #    - develop
+    #    - master
