@@ -7,10 +7,6 @@
 #include <tiny_obj_loader.h>
 
 namespace pathtrace::shapes {
-    Triangle::Triangle(std::array<glm::dvec3, 3>&& vertices) :
-        vertices{std::move(vertices)}
-    {}
-
     Intersection Triangle::intersect(const Ray& ray, const Shape& shape) const
     {
         // Möller-Trumbore algorithm
@@ -38,7 +34,13 @@ namespace pathtrace::shapes {
         if (distance <= 0)  // is behind
             return {};
 
-        return {&shape, distance, ray, glm::dvec3{1, 1, 1}};
+        return {&shape, distance, ray, normal};
+    }
+
+    void Triangle::guess_normal()
+    {
+        normal = glm::normalize(glm::cross(vertices[1] - vertices[0],
+                                           vertices[2] - vertices[0]));
     }
 
 
@@ -48,14 +50,19 @@ namespace pathtrace::shapes {
                                   rotation.y,
                                   -rotation.z};
         glm::dmat4 transformation = math::transform(position, fixed_rotation, scale);
+        glm::dmat4 pseudo_transformation = glm::transpose(glm::inverse(transformation));  // do not deform normals etc
 
         transformed_triangles.clear();
         transformed_triangles.reserve(triangles.size());
         std::transform(triangles.begin(), triangles.end(), std::back_inserter(transformed_triangles),
                        [&](const Triangle& triangle) {
-                           return Triangle{{transformation * glm::dvec4{triangle.vertices[0], 1},
-                                            transformation * glm::dvec4{triangle.vertices[1], 1},
-                                            transformation * glm::dvec4{triangle.vertices[2], 1}}};
+                           Triangle new_triangle;
+                           new_triangle.vertices = {transformation * glm::dvec4{triangle.vertices[0], 1},
+                                                    transformation * glm::dvec4{triangle.vertices[1], 1},
+                                                    transformation * glm::dvec4{triangle.vertices[2], 1}};
+                           new_triangle.normal = pseudo_transformation * glm::dvec4{triangle.normal, 1};
+
+                           return new_triangle;
                        });
     }
 
@@ -64,6 +71,10 @@ namespace pathtrace::shapes {
         Intersection intersection;
         for (const Triangle& triangle : transformed_triangles) {
             Intersection new_intersection = triangle.intersect(ray, *this);
+
+            if (new_intersection.distance < 1e-9)
+                new_intersection.shape = nullptr;
+
             if (new_intersection && new_intersection.distance < intersection.distance) {
                 intersection = std::move(new_intersection);
             }
@@ -90,15 +101,27 @@ namespace pathtrace::shapes {
             int index_offset = 0;
             for (uint8_t number_of_vertices : shape.mesh.num_face_vertices) {  // iterate over faces
                 assert(number_of_vertices == 3);
-                std::array<glm::dvec3, 3> vertices;
+                Triangle triangle;
+                int nr_normals = 0;
                 for (int i = 0; i < 3; ++i) {
                     tinyobj::index_t idx = shape.mesh.indices[index_offset + i];
-                    vertices[i] = {attrib.vertices[3 * idx.vertex_index + 0],
-                                   attrib.vertices[3 * idx.vertex_index + 1],
-                                   attrib.vertices[3 * idx.vertex_index + 2]};
+                    triangle.vertices[i] = {attrib.vertices[3 * idx.vertex_index + 0],
+                                            attrib.vertices[3 * idx.vertex_index + 1],
+                                            attrib.vertices[3 * idx.vertex_index + 2]};
+                    if (idx.normal_index >= 0) {
+                        triangle.normal += glm::dvec3{attrib.normals[3 * idx.normal_index + 0],
+                                                      attrib.normals[3 * idx.normal_index + 1],
+                                                      attrib.normals[3 * idx.normal_index + 2]};
+                        ++nr_normals;
+                    }
                 }
                 index_offset += 3;
-                triangles.emplace_back(std::move(vertices));
+
+                if (nr_normals)
+                    triangle.normal = glm::normalize(triangle.normal / static_cast<double>(nr_normals));
+                else
+                    triangle.guess_normal();
+                triangles.emplace_back(std::move(triangle));
             }
         }
     }

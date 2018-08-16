@@ -7,10 +7,13 @@
 namespace pathtrace::shapes {
     struct Triangle {
         std::array<glm::dvec3, 3> vertices;
+        glm::dvec3 normal;
 
         Triangle() = default;
-        Triangle(std::array<glm::dvec3, 3>&& vertices);
         Intersection intersect(const Ray& ray, const Shape& shape) const;
+
+        /// may compute inverted normal
+        void guess_normal();
     };
 
     struct Mesh : public Shape {
