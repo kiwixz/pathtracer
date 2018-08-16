@@ -1,4 +1,5 @@
 #include "pathtrace/serializers.h"
+#include "pathtrace/shapes/mesh.h"
 #include "pathtrace/shapes/plane.h"
 #include "pathtrace/shapes/sphere.h"
 #include <typeindex>
@@ -17,6 +18,7 @@ namespace {
     const std::unordered_map<std::type_index, std::string> map_shape_types = {
             {typeid(shapes::Sphere), "sphere"},
             {typeid(shapes::Plane), "plane"},
+            {typeid(shapes::Mesh), "mesh"},
     };
     template <typename T>
     const std::string& shape_type()
@@ -42,6 +44,14 @@ namespace {
                  shape->rotation = glm::radians(j.at("rotation").get<glm::dvec3>());
                  return shape;
              }},
+            {shape_type<shapes::Mesh>(), [](const nlohmann::json& j) {
+                 auto shape = std::make_unique<shapes::Mesh>();
+                 shape->position = j.at("position");
+                 shape->rotation = glm::radians(j.at("rotation").get<glm::dvec3>());
+                 shape->scale = j.at("scale");
+                 shape->load_obj(j.at("file"));
+                 return shape;
+             }},
     };
 
     using ShapeSaver = std::function<void(const Shape&, nlohmann::json&)>;
@@ -55,6 +65,13 @@ namespace {
                  auto& shape = reinterpret_cast<const shapes::Plane&>(shape_);
                  j["position"] = shape.position;
                  j["rotation"] = glm::degrees(shape.rotation);
+             }},
+            {shape_type<shapes::Mesh>(), [](const Shape& shape_, nlohmann::json& j) {
+                 auto& shape = reinterpret_cast<const shapes::Mesh&>(shape_);
+                 j["position"] = shape.position;
+                 j["rotation"] = glm::degrees(shape.rotation);
+                 j["scale"] = shape.scale;
+                 j["file"] = "unknown";  // TODO should we maybe save filename or save triangles ?
              }},
     };
 }  // namespace
@@ -96,6 +113,7 @@ namespace nlohmann {
         nlohmann::json& j_camera = j["camera"];
         j_camera["position"] = value.camera.position;
         j_camera["rotation"] = glm::degrees(value.camera.rotation);
+        j_camera["scale"] = value.camera.scale;
         j_camera["field_of_view"] = glm::degrees(value.camera.field_of_view);
 
         nlohmann::json& j_shapes = j["shapes"];
@@ -122,6 +140,7 @@ namespace nlohmann {
         nlohmann::json j_camera = j.at("camera");
         value.camera.position = j_camera.at("position");
         value.camera.rotation = glm::radians(j_camera.at("rotation").get<glm::dvec3>());
+        value.camera.scale = j_camera.at("scale");
         value.camera.field_of_view = glm::radians(j_camera.at("field_of_view").get<double>());
 
         nlohmann::json j_shapes = j.at("shapes");

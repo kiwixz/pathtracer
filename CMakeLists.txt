@@ -34,6 +34,7 @@ find_package(Threads REQUIRED)
 find_package(fmt REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(tinyobjloader REQUIRED)
 
 include_directories("${CMAKE_SOURCE_DIR}")
 
@@ -51,4 +52,5 @@ pathtracer_exe("app"
         "glm"
         "lodepng"
         "spdlog::spdlog"
+        "tinyobjloader"
 )

@@ -14,14 +14,6 @@ namespace pathtrace {
             void operator()(int x_min, int x_max, int y_min, int y_max);
 
         private:
-            struct Intersection {
-                const Shape* shape = nullptr;
-                double distance = std::numeric_limits<double>::infinity();
-
-                Intersection() = default;
-                explicit operator bool() const;
-            };
-
             std::vector<Color>& pixels_;
             const Scene& scene_;
 
@@ -31,11 +23,6 @@ namespace pathtrace {
             Color radiance(const Ray& ray, int depth = 0);
         };
 
-        RendererWork::Intersection::operator bool() const
-        {
-            return shape;
-        }
-
         RendererWork::RendererWork(std::vector<Color>& pixels, const Scene& scene) :
             pixels_{pixels}, scene_{scene}
         {}
@@ -43,7 +30,12 @@ namespace pathtrace {
         /// max are not inclusive
         void RendererWork::operator()(int x_min, int x_max, int y_min, int y_max)
         {
-            glm::dmat4 projection = math::transform(scene_.camera.position, scene_.camera.rotation);
+            glm::dvec3 fixed_rotation{scene_.camera.rotation.x,
+                                      -scene_.camera.rotation.y,
+                                      scene_.camera.rotation.z};
+            glm::dmat4 projection = glm::transpose(math::transform(scene_.camera.position,
+                                                                   fixed_rotation,
+                                                                   1.0 / scene_.camera.scale));
             double aspect_ratio = scene_.settings.width / static_cast<double>(scene_.settings.height);
             double fov_ratio = 2 * tan(scene_.camera.field_of_view / 2);
 
@@ -72,19 +64,18 @@ namespace pathtrace {
             }
         }
 
-        RendererWork::Intersection RendererWork::intersect(const Ray& ray)
+        Intersection RendererWork::intersect(const Ray& ray)
         {
             Intersection intersection;
 
             for (const std::unique_ptr<Shape>& shape : scene_.shapes) {
-                std::optional<double> new_distance = shape->intersect(ray);
+                Intersection new_intersection = shape->intersect(ray);
 
-                if (new_distance < 1e-9)  // TODO justify epsilon
-                    new_distance.reset();
+                if (new_intersection.distance < 1e-9)  // TODO justify epsilon
+                    new_intersection.shape = nullptr;
 
-                if (new_distance && *new_distance < intersection.distance) {
-                    intersection.distance = new_distance.value();
-                    intersection.shape = shape.get();
+                if (new_intersection && new_intersection.distance < intersection.distance) {
+                    intersection = std::move(new_intersection);
                 }
             }
 
@@ -98,6 +89,8 @@ namespace pathtrace {
                 return scene_.settings.background_color;
 
             const Shape& shape = *intersection.shape;
+            const glm::dvec3& point = intersection.point;
+            const glm::dvec3& normal = intersection.normal;
             const Material& mat = shape.material;
 
             Color color = mat.color;
@@ -112,8 +105,6 @@ namespace pathtrace {
             }
             ++depth;
 
-            glm::dvec3 point = ray.origin + ray.direction * intersection.distance;
-            glm::dvec3 normal = shape.normal(point);
             glm::dvec3 oriented_normal = glm::dot(normal, ray.direction) > 0 ? -normal : normal;
 
             switch (shape.material.reflection) {

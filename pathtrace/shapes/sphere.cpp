@@ -7,7 +7,7 @@ namespace pathtrace::shapes {
         radius_sq = radius * radius;
     }
 
-    std::optional<double> Sphere::intersect(const Ray& ray) const
+    Intersection Sphere::intersect(const Ray& ray) const
     {
         glm::dvec3 vec_to_pos = position - ray.origin;
         double middle = glm::dot(vec_to_pos, ray.direction);
@@ -23,11 +23,7 @@ namespace pathtrace::shapes {
                 return {};
         }
 
-        return distance;
-    }
-
-    glm::dvec3 Sphere::normal(const glm::dvec3& intersection) const
-    {
-        return glm::normalize(intersection - position);
+        glm::dvec3 point = ray.origin + ray.direction * distance;
+        return {this, distance, point, glm::normalize(point - position)};
     }
 }  // namespace pathtrace::shapes
