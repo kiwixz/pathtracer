@@ -33,7 +33,9 @@ namespace pathtrace {
             glm::dvec3 fixed_rotation{scene_.camera.rotation.x,
                                       -scene_.camera.rotation.y,
                                       scene_.camera.rotation.z};
-            glm::dmat4 projection = glm::transpose(math::transform(scene_.camera.position, fixed_rotation));
+            glm::dmat4 projection = glm::transpose(math::transform(scene_.camera.position,
+                                                                   fixed_rotation,
+                                                                   1.0 / scene_.camera.scale));
             double aspect_ratio = scene_.settings.width / static_cast<double>(scene_.settings.height);
             double fov_ratio = 2 * tan(scene_.camera.field_of_view / 2);
 

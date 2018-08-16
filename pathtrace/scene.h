@@ -21,6 +21,7 @@ namespace pathtrace {
         struct Camera {
             glm::dvec3 position;
             glm::dvec3 rotation;
+            glm::dvec3 scale;
             double field_of_view = glm::radians(90.0);
         };
 

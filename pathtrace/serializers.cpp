@@ -113,6 +113,7 @@ namespace nlohmann {
         nlohmann::json& j_camera = j["camera"];
         j_camera["position"] = value.camera.position;
         j_camera["rotation"] = glm::degrees(value.camera.rotation);
+        j_camera["scale"] = value.camera.scale;
         j_camera["field_of_view"] = glm::degrees(value.camera.field_of_view);
 
         nlohmann::json& j_shapes = j["shapes"];
@@ -139,6 +140,7 @@ namespace nlohmann {
         nlohmann::json j_camera = j.at("camera");
         value.camera.position = j_camera.at("position");
         value.camera.rotation = glm::radians(j_camera.at("rotation").get<glm::dvec3>());
+        value.camera.scale = j_camera.at("scale");
         value.camera.field_of_view = glm::radians(j_camera.at("field_of_view").get<double>());
 
         nlohmann::json j_shapes = j.at("shapes");
