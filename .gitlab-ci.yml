@@ -48,16 +48,20 @@ post:
     script: |
         docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
             echo -e "\e[1;97;44m > Formatting with clang-format... \e[0m"
-            ERR=0
+            err=0
             for f in **/*.h **/*.cpp **/*.inl; do
-                clang-format "$f" | diff --color=auto "$f" -
-                ERR=$((ERR+$?))
+                diff=$(clang-format "$f" | diff -d --color=always "$f" -)
+                if [[ ! -z "$diff" ]]; then
+                    echo -e "\e[1m$f\e[0m"
+                    echo "$diff"
+                    echo
+                    ((++err))
+                fi
             done
-            if [[ $ERR -eq 0 ]]; then
-                echo "Already formatted!"
-            else
-                exit $ERR
+            if [[ $err -eq 0 ]]; then
+                echo -e "\e[1mEverything is already formatted!\e[0m"
             fi
+            exit $err
         '
 
 cleanup:
