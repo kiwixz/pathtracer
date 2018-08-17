@@ -33,4 +33,11 @@ namespace pathtrace {
 
         return std::max(tmin, tzmin);
     }
+
+    bool Aabb::contains(const glm::dvec3& point) const
+    {
+        return point.x >= bottom_left.x && point.x <= top_right.x
+               && point.y >= bottom_left.y && point.y <= top_right.y
+               && point.z >= bottom_left.z && point.z <= top_right.z;
+    }
 }  // namespace pathtrace

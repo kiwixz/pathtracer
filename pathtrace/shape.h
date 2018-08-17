@@ -9,6 +9,7 @@
 namespace pathtrace {
     struct Shape;
 
+
     struct Material {
         enum class Reflection {
             diffuse,     // default
@@ -24,6 +25,7 @@ namespace pathtrace {
         Material(Reflection reflection, const Color& emission, const Color& color);
     };
 
+
     struct Intersection {
         const Shape* shape = nullptr;
         double distance = std::numeric_limits<double>::infinity();
@@ -36,11 +38,11 @@ namespace pathtrace {
         explicit operator bool() const;
     };
 
+
     struct Shape {
         Material material;
 
         virtual ~Shape() = default;
-
         virtual void bake() = 0;
         virtual Intersection intersect(const Ray& ray) const = 0;
     };
