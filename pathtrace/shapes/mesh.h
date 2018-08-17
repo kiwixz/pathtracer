@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pathtrace/shape.h"
-#include "pathtrace/shapes/triangle.h"
+#include <pathtrace/shape.h>
+#include <pathtrace/shapes/triangle.h>
 #include <vector>
 
 namespace pathtrace::shapes {

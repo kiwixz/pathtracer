@@ -1,4 +1,4 @@
-#include "pathtrace/shapes/sphere.h"
+#include "sphere.h"
 #include <glm/geometric.hpp>
 
 namespace pathtrace::shapes {

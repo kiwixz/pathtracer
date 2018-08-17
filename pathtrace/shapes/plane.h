@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pathtrace/shape.h"
+#include <pathtrace/shape.h>
 
 namespace pathtrace::shapes {
     struct Plane : public Shape {

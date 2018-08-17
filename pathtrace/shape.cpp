@@ -1,4 +1,4 @@
-#include "pathtrace/shape.h"
+#include "shape.h"
 
 namespace pathtrace {
     Material::Material(Reflection reflection, const Color& emission, const Color& color) :

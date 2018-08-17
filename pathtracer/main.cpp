@@ -1,4 +1,4 @@
-#include "pathtracer/app.h"
+#include <pathtracer/app.h>
 
 int main(int argc, char** argv)
 {

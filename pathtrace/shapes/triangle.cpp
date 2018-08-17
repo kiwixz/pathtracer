@@ -1,4 +1,4 @@
-#include "pathtrace/shapes/triangle.h"
+#include "triangle.h"
 #include <glm/geometric.hpp>
 
 namespace pathtrace::shapes {

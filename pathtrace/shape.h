@@ -1,8 +1,8 @@
 #pragma once
 
-#include "pathtrace/aabb.h"
-#include "pathtrace/image.h"
-#include "pathtrace/ray.h"
+#include <pathtrace/aabb.h>
+#include <pathtrace/image.h>
+#include <pathtrace/ray.h>
 #include <glm/vec3.hpp>
 #include <optional>
 

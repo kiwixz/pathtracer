@@ -1,4 +1,4 @@
-#include "pathtrace/octree.h"
+#include "octree.h"
 
 namespace pathtrace {
     namespace {

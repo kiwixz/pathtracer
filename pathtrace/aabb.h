@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pathtrace/ray.h"
+#include <pathtrace/ray.h>
 #include <glm/vec3.hpp>
 #include <optional>
 

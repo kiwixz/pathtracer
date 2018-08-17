@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pathtrace/scene.h"
-#include "pathtrace/shape.h"
+#include <pathtrace/scene.h>
+#include <pathtrace/shape.h>
 #include <glm/vec3.hpp>
 #include <nlohmann/json.hpp>
 
@@ -28,4 +28,4 @@ namespace nlohmann {
     };
 }  // namespace nlohmann
 
-#include "pathtrace/serializers.inl"
+#include "serializers.inl"

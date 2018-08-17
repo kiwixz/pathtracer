@@ -1,6 +1,6 @@
-#include "pathtrace/renderer.h"
-#include "pathtrace/fast_rand.h"
-#include "pathtrace/math.h"
+#include "renderer.h"
+#include <pathtrace/fast_rand.h>
+#include <pathtrace/math.h>
 #include <glm/gtc/constants.hpp>
 #include <future>
 

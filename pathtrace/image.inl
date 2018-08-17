@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pathtrace/image.h"
+#include "image.h"
 #include <algorithm>
 #include <cmath>
 

@@ -1,4 +1,4 @@
-#include "pathtrace/aabb.h"
+#include "aabb.h"
 #include <glm/geometric.hpp>
 #include <algorithm>
 

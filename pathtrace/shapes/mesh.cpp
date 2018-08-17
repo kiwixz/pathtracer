@@ -1,6 +1,5 @@
-#include "pathtrace/shapes/mesh.h"
 #include "mesh.h"
-#include "pathtrace/math.h"
+#include <pathtrace/math.h>
 
 // #define TINYOBJLOADER_USE_DOUBLE  // should work but make tinyobjloader go crazy
 #include <tiny_obj_loader.h>

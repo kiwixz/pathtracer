@@ -1,7 +1,7 @@
-#include "pathtrace/serializers.h"
-#include "pathtrace/shapes/mesh.h"
-#include "pathtrace/shapes/plane.h"
-#include "pathtrace/shapes/sphere.h"
+#include "serializers.h"
+#include <pathtrace/shapes/mesh.h>
+#include <pathtrace/shapes/plane.h>
+#include <pathtrace/shapes/sphere.h>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>

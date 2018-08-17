@@ -1,5 +1,5 @@
-#include "pathtrace/shapes/plane.h"
-#include "pathtrace/math.h"
+#include "plane.h"
+#include <pathtrace/math.h>
 #include <glm/geometric.hpp>
 
 namespace pathtrace::shapes {

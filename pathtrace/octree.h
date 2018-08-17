@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pathtrace/aabb.h"
-#include "pathtrace/shapes/triangle.h"
+#include <pathtrace/aabb.h>
+#include <pathtrace/shapes/triangle.h>
 
 namespace pathtrace {
     class Octree {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pathtrace/serializers.h"
+#include "serializers.h"
 
 namespace nlohmann {
     template <glm::length_t L, typename T, glm::qualifier Q>

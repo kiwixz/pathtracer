@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pathtrace/shape.h"
+#include <pathtrace/shape.h>
 #include <array>
 
 namespace pathtrace::shapes {
