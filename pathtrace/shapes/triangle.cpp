@@ -14,20 +14,20 @@ namespace pathtrace::shapes {
 
         // Möller-Trumbore algorithm
 
-        glm::dvec3 pvec = glm::cross(ray.direction, v0_to_v2);
+        glm::dvec3 pvec = glm::cross(ray.direction(), v0_to_v2);
 
         double determinant = glm::dot(pvec, v0_to_v1);
         if (determinant == 0)  // parallel
             return {};
         double inverse_determinant = 1 / determinant;
 
-        glm::dvec3 v0_to_origin = ray.origin - vertices[0];
+        glm::dvec3 v0_to_origin = ray.origin() - vertices[0];
         double u = glm::dot(v0_to_origin, pvec) * inverse_determinant;
         if (u < 0 || u > 1)
             return {};
 
         glm::dvec3 qvec = glm::cross(v0_to_origin, v0_to_v1);
-        double v = glm::dot(ray.direction, qvec) * inverse_determinant;
+        double v = glm::dot(ray.direction(), qvec) * inverse_determinant;
         if (v < 0 || u + v > 1)
             return {};
 

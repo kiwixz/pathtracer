@@ -95,7 +95,7 @@ namespace pathtrace {
             }
             ++depth;
 
-            glm::dvec3 oriented_normal = glm::dot(normal, ray.direction) > 0 ? -normal : normal;
+            glm::dvec3 oriented_normal = glm::dot(normal, ray.direction()) > 0 ? -normal : normal;
 
             switch (shape.material.reflection) {
             case Material::Reflection::diffuse: {
@@ -117,25 +117,25 @@ namespace pathtrace {
                 return mat.emission + color * radiance({point, direction}, depth);
             }
             case Material::Reflection::specular:
-                return mat.emission + color * radiance({point, glm::reflect(ray.direction, normal)}, depth);
+                return mat.emission + color * radiance({point, glm::reflect(ray.direction(), normal)}, depth);
             case Material::Reflection::refractive: {
-                Ray reflected = {point, glm::reflect(ray.direction, normal)};
+                Ray reflected = {point, glm::reflect(ray.direction(), normal)};
                 bool into = (normal == oriented_normal);
                 constexpr double eta_out = 1;  // indice of refraction of air
                 double eta_in = 1.5;           // TODO add to material
                 double eta_ratio = into ? eta_out / eta_in : eta_in / eta_out;
-                double cos_normal = glm::dot(ray.direction, oriented_normal);
+                double cos_normal = glm::dot(ray.direction(), oriented_normal);
                 double cos_transmission_sq = 1 - eta_ratio * eta_ratio * (1 - cos_normal * cos_normal);
                 if (cos_transmission_sq <= 0)  // total internal reflection
                     return mat.emission + color * radiance(reflected, depth);
 
                 double cos_transmission = std::sqrt(cos_transmission_sq);
-                glm::dvec3 refraction_vec = ray.direction * eta_ratio - normal * ((cos_normal * eta_ratio + cos_transmission) * (into ? 1 : -1));
+                glm::dvec3 refraction_vec = ray.direction() * eta_ratio - normal * ((cos_normal * eta_ratio + cos_transmission) * (into ? 1 : -1));
                 Ray refracted = {point, glm::normalize(refraction_vec)};
                 double eta_difference = eta_out - eta_in;
                 double eta_sum = eta_out + eta_in;
                 double reflectance_normal = (eta_difference * eta_difference) / (eta_sum * eta_sum);
-                double inverted_cos_theta = 1 - (into ? -cos_normal : glm::dot(refracted.direction, normal));
+                double inverted_cos_theta = 1 - (into ? -cos_normal : glm::dot(refracted.direction(), normal));
                 double reflectance = reflectance_normal + (1 - reflectance_normal) * std::pow(inverted_cos_theta, 5);  // fresnel schlick approximation
                 return mat.emission + color * (gen_() < reflectance ? radiance(reflected, depth) : radiance(refracted, depth));
             }
