@@ -1,6 +1,6 @@
-#include "app/app.h"
-#include "app/endian.h"
+#include "pathtracer/app.h"
 #include "pathtrace/renderer.h"
+#include "pathtracer/endian.h"
 #include <cxxopts.hpp>
 #include <lodepng.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <fstream>
 
-namespace app {
+namespace pathtracer {
     namespace {
         using ProfClock = std::chrono::high_resolution_clock;
 
@@ -34,11 +34,8 @@ namespace app {
 
             std::shared_ptr<spdlog::logger> logger = spdlog::get("stderr");
 
-            std::filesystem::path cd = std::filesystem::current_path();
-            std::filesystem::current_path(std::filesystem::path{args.input}.parent_path());  // change directory to load relative mesh files
             pathtrace::Scene scene;
             scene.load_from_file(args.input);
-            std::filesystem::current_path(cd);
 
             logger->info("generating image...");
             ProfClock::time_point start = ProfClock::now();
@@ -163,4 +160,4 @@ namespace app {
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
     }
-}  // namespace app
+}  // namespace pathtracer

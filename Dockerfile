@@ -10,7 +10,7 @@ RUN echo -e "\e[1;97;44m > Installing system packages... \e[0m"  \
 RUN echo -e "\e[1;97;44m > Installing dependencies... \e[0m"  \
     && vcpkg install cxxopts fmt glm lodepng nlohmann-json spdlog tinyobjloader
 
-COPY "." "/tmp/repository/"
-WORKDIR "/tmp/repository"
+COPY "." "/mnt/repo/"
+WORKDIR "/mnt/repo"
 
 CMD ["/bin/bash", "-l"]

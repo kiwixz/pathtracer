@@ -9,6 +9,8 @@ namespace pathtrace::shapes {
 
     Intersection Sphere::intersect(const Ray& ray) const
     {
+        constexpr double epsilon = 1e-9;
+
         glm::dvec3 vec_to_pos = position - ray.origin;
         double middle = glm::dot(vec_to_pos, ray.direction);
         double distance_middle_center_sq = glm::dot(vec_to_pos, vec_to_pos) - middle * middle;
@@ -17,9 +19,9 @@ namespace pathtrace::shapes {
         double middle_to_intersection = std::sqrt(radius_sq - distance_middle_center_sq);
 
         double distance = middle - middle_to_intersection;
-        if (distance <= 0) {  // this point is behind, check the other
+        if (distance < epsilon) {  // this point is behind, check the other
             distance = middle + middle_to_intersection;
-            if (distance <= 0)  // behind too
+            if (distance < epsilon)  // behind too
                 return {};
         }
 

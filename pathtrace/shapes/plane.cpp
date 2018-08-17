@@ -10,11 +10,13 @@ namespace pathtrace::shapes {
 
     Intersection Plane::intersect(const Ray& ray) const
     {
+        constexpr double epsilon = 1e-12;
+
         double denominator = glm::dot(ray.direction, up);
         if (!denominator)  // parallel
             return {};
         double distance = glm::dot(position - ray.origin, up) / denominator;
-        if (distance <= 0)  // is behind
+        if (distance < epsilon)  // is behind
             return {};
         return {this, distance, ray, up};
     }

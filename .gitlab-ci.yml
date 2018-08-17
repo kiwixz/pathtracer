@@ -1,66 +1,111 @@
 image: docker:stable
 
-variables:
-    GIT_STRATEGY: "none"
-    DOCKER_IMAGE: "gitlab_${CI_PROJECT_NAME}_${CI_PIPELINE_ID}"
-
 stages:
     - docker
     - build
-    - post
-    - cleanup
+    - deploy
+
+variables:
+    CACHE_DIR: "build/cache"
+    DOCKER_IMAGE: "gitlab_${CI_PROJECT_NAME}_${CI_PIPELINE_ID}"
+    REQUIRED_IMAGES: "kiwixz/arch-vcpkg:2018-08-05"
+
+cache:
+    key: "$CI_COMMIT_REF_NAME"
+    paths:
+        - $CACHE_DIR
+    policy: pull
+
+services:
+    - docker:stable-dind
+
+before_script:
+    - echo -e "\n\e[1;97;44m > Building docker image... \e[0m"
+    - |
+        if [[ -f "$CACHE_DIR/docker.tar" ]]; then
+            docker load -i "$CACHE_DIR/docker.tar"
+        fi
+    - docker build -t "$DOCKER_IMAGE" --pull .
 
 
 docker:
     stage: docker
-    variables:
-        GIT_STRATEGY: "fetch"
+    cache:
+        key: "$CI_COMMIT_REF_NAME"
+        paths:
+            - $CACHE_DIR
+        policy: pull-push
     script:
-        - echo -e "\e[1;97;44m > Building docker image... \e[0m"
-        - docker build -t "$DOCKER_IMAGE" --pull .
+        - echo -e "\n\e[1;97;44m > Saving docker image... \e[0m"
+        - mkdir -p "$CACHE_DIR"
+        - docker save -o "$CACHE_DIR/docker.tar" "$REQUIRED_IMAGES" $(docker history -q "$DOCKER_IMAGE" | grep -v "<")
         - |
             docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
-                echo -e "\e[1;97;44m > Dumping system packages... \e[0m"
+                echo -e "\n\e[1;97;44m > Dumping system packages... \e[0m"
                 pacman --color=always -Q
-                echo -e "\e[1;97;44m > Dumping vcpkg packages... \e[0m"
+                echo -e "\n\e[1;97;44m > Dumping vcpkg packages... \e[0m"
                 vcpkg list
             '
+
 
 build:
     stage: build
     script: |
         docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
-            echo -e "\n\e[1;97;44m > Building... \e[0m"
             export CXXFLAGS="-fdiagnostics-color=always -isystem /opt/vcpkg/installed/x64-linux/include -L /opt/vcpkg/installed/x64-linux/lib"
             export CLICOLOR_FORCE="1"
+            echo -e "\n\e[1;97;44m > Building debug... \e[0m"
             mkdir -p "build/debug"
             cd "build/debug"
             cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=Debug" "../.."
             make -j$(nproc) -Orecurse
+            echo -e "\n\e[1;97;44m > Building release... \e[0m"
             mkdir "../release"
             cd "../release"
             cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=RelWithDebInfo" "../.."
             make -j$(nproc) -Orecurse
         '
 
-post:
-    stage: post
+misc:
+    stage: build
     script: |
         docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
             echo -e "\e[1;97;44m > Formatting with clang-format... \e[0m"
-            ERR=0
+            err=0
             for f in **/*.h **/*.cpp **/*.inl; do
-                clang-format "$f" | diff --color=auto "$f" -
-                ERR=$((ERR+$?))
+                diff=$(clang-format "$f" | diff -d --color=always "$f" -)
+                if [[ ! -z "$diff" ]]; then
+                    echo -e "\e[1m$f\e[0m"
+                    echo "$diff"
+                    echo
+                    ((++err))
+                fi
             done
-            if [[ $ERR -eq 0 ]]; then
-                echo "Already formatted!"
-            else
-                exit $ERR
+            if [[ $err -eq 0 ]]; then
+                echo -e "\e[1mEverything is already formatted!\e[0m"
             fi
+            exit $err
         '
 
-cleanup:
-    stage: cleanup
+pages:
+    stage: deploy
+    before_script:
+        - apk update
+        - apk add doxygen git graphviz ttf-freefont
     script:
-        - docker rmi --no-prune "$DOCKER_IMAGE"
+        - |
+            for branch in develop; do  # TODO add master when ready
+                echo -e "\n\e[1;97;44m > Generating documentation for $branch... \e[0m"
+                git checkout "$branch"
+                mkdir -p "build/doc"
+                doxygen
+                mkdir -p "build/public/$branch"
+                mv "build/doc/html" "build/public/$branch/doc"
+            done
+        - mv "build/public" "public"
+    artifacts:
+        paths:
+            - public
+    only:
+        - develop
+        - master

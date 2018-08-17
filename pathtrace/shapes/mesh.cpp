@@ -15,6 +15,8 @@ namespace pathtrace::shapes {
 
     Intersection Triangle::intersect(const Ray& ray, const Shape& shape) const
     {
+        constexpr double epsilon = 1e-12;
+
         // Möller-Trumbore algorithm
 
         glm::dvec3 pvec = glm::cross(ray.direction, v0_to_v2);
@@ -35,7 +37,7 @@ namespace pathtrace::shapes {
             return {};
 
         double distance = glm::dot(v0_to_v2, qvec) * inverse_determinant;
-        if (distance <= 0)  // is behind
+        if (distance < epsilon)  // is behind
             return {};
 
         return {&shape, distance, ray, normal};
@@ -50,10 +52,7 @@ namespace pathtrace::shapes {
 
     void Mesh::bake()
     {
-        glm::dvec3 fixed_rotation{-rotation.x,
-                                  rotation.y,
-                                  -rotation.z};
-        glm::dmat4 transformation = math::transform(position, fixed_rotation, scale);
+        glm::dmat4 transformation = math::transform(position, rotation, scale);
         glm::dmat4 pseudo_transformation = glm::transpose(glm::inverse(transformation));  // do not deform normals etc
 
         transformed_triangles.clear();
@@ -77,10 +76,6 @@ namespace pathtrace::shapes {
         Intersection intersection;
         for (const Triangle& triangle : transformed_triangles) {
             Intersection new_intersection = triangle.intersect(ray, *this);
-
-            if (new_intersection.distance < 1e-9)
-                new_intersection.shape = nullptr;
-
             if (new_intersection && new_intersection.distance < intersection.distance) {
                 intersection = std::move(new_intersection);
             }

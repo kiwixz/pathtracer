@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{EDB7A15F-D038-4DF1-BE8D-166A19858C95}</ProjectGuid>
-    <RootNamespace>app</RootNamespace>
+    <RootNamespace>pathtracer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -158,16 +158,16 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\pathtrace\pathtrace.vcxproj">
-      <Project>{d2c0d5ee-5ce3-4fa6-a035-e2c4f9d673a7}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="endian.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="endian.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\pathtrace\pathtrace.vcxproj">
+      <Project>{d2c0d5ee-5ce3-4fa6-a035-e2c4f9d673a7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

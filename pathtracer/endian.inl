@@ -1,10 +1,10 @@
 #pragma once
 
-#include "app/endian.h"
+#include "pathtracer/endian.h"
 #include <cstdint>
 #include <type_traits>
 
-namespace app::endian {
+namespace pathtracer::endian {
     namespace detail_endian {
         // clang-format off
         constexpr uint8_t swap_unsigned(uint8_t value)
@@ -64,4 +64,4 @@ namespace app::endian {
     {
         return host_to_little(value);
     }
-}  // namespace app::endian
+}  // namespace pathtracer::endian

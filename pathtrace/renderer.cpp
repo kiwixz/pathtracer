@@ -30,11 +30,8 @@ namespace pathtrace {
         /// max are not inclusive
         void RendererWork::operator()(int x_min, int x_max, int y_min, int y_max)
         {
-            glm::dvec3 fixed_rotation{scene_.camera.rotation.x,
-                                      -scene_.camera.rotation.y,
-                                      scene_.camera.rotation.z};
             glm::dmat4 projection = glm::transpose(math::transform(scene_.camera.position,
-                                                                   fixed_rotation,
+                                                                   -scene_.camera.rotation,
                                                                    1.0 / scene_.camera.scale));
             double aspect_ratio = scene_.settings.width / static_cast<double>(scene_.settings.height);
             double fov_ratio = 2 * tan(scene_.camera.field_of_view / 2);
@@ -70,10 +67,6 @@ namespace pathtrace {
 
             for (const std::unique_ptr<Shape>& shape : scene_.shapes) {
                 Intersection new_intersection = shape->intersect(ray);
-
-                if (new_intersection.distance < 1e-9)  // TODO justify epsilon
-                    new_intersection.shape = nullptr;
-
                 if (new_intersection && new_intersection.distance < intersection.distance) {
                     intersection = std::move(new_intersection);
                 }
