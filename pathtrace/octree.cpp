@@ -31,7 +31,7 @@ namespace pathtrace {
 
     void OctreeNode::add_triangle(const shapes::Triangle& triangle)
     {
-        if (triangles_.size() <= min_triangles_intersect_aabb - 1) {
+        if (!children_ && triangles_.size() <= min_triangles_intersect_aabb - 1) {
             if (triangles_.size() < min_triangles_intersect_aabb - 1)
                 triangles_.emplace_back(triangle);
             else {  // evaluate triangles to make sure we dont have to add them in
@@ -49,7 +49,7 @@ namespace pathtrace {
                     (*children_)[i] = {{bottom_left, bottom_left + half}};
                 }
 
-                for (shapes::Triangle& old_triangle : old_triangles)
+                for (const shapes::Triangle& old_triangle : old_triangles)
                     add_triangle_placed(old_triangle);
                 add_triangle_placed(triangle);
             }
@@ -60,25 +60,27 @@ namespace pathtrace {
 
     Intersection OctreeNode::intersect(const Ray& ray, double max_distance) const
     {
-        Intersection intersection;
         if (triangles_.size() >= min_triangles_intersect_aabb || children_) {
             std::optional<double> distance = aabb_.intersect(ray);
             if (!distance || distance > max_distance)
                 return {};
-
-            if (children_)
-                for (const OctreeNode& child : *children_) {
-                    Intersection new_intersection = child.intersect(ray, intersection.distance);
-                    if (new_intersection && new_intersection.distance < intersection.distance)
-                        intersection = std::move(new_intersection);
-                }
         }
+
+        Intersection intersection;
 
         for (const shapes::Triangle& triangle : triangles_) {
             Intersection new_intersection = triangle.intersect(ray);
             if (new_intersection && new_intersection.distance < intersection.distance)
                 intersection = std::move(new_intersection);
         }
+
+        if (children_)
+            for (const OctreeNode& child : *children_) {
+                Intersection new_intersection = child.intersect(ray, intersection.distance);
+                if (new_intersection && new_intersection.distance < intersection.distance)
+                    intersection = std::move(new_intersection);
+            }
+
         return intersection;
     }
 
