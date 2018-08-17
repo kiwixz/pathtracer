@@ -28,6 +28,16 @@ namespace pathtracer {
 
         constexpr std::string_view version = "(build " __DATE__ " " __TIME__ ")";
 
+        std::string format_time(double seconds)
+        {
+            int minutes = static_cast<int>(seconds) / 60;
+            seconds -= minutes * 60;
+            int hours = minutes / 60;
+            minutes -= hours * 60;
+
+            return fmt::format("{:02d}:{:02d}:{:05.2f}", hours, minutes, seconds);
+        }
+
         void full_render(const AppArgs& args)
         {
             using namespace std::string_literals;
@@ -40,8 +50,8 @@ namespace pathtracer {
             logger->info("generating image...");
             ProfClock::time_point start = ProfClock::now();
             pathtrace::Image image = pathtrace::Renderer{}.render(scene);
-            std::chrono::duration<double> duration = ProfClock::now() - start;
-            logger->info("generated image in {}s", duration.count());
+            std::string duration = format_time(std::chrono::duration<double>{ProfClock::now() - start}.count());
+            logger->info("generated image in {}", duration);
 
             lodepng::State state;
             state.info_raw.bitdepth = 8;
