@@ -8,7 +8,7 @@ namespace pathtrace::shapes {
         v0_to_v1 = vertices[1] - vertices[0];
     }
 
-    Intersection Triangle::intersect(const Ray& ray, const Shape& shape) const
+    Intersection Triangle::intersect(const Ray& ray) const
     {
         constexpr double epsilon = 1e-12;
 
@@ -35,7 +35,7 @@ namespace pathtrace::shapes {
         if (distance < epsilon)  // is behind
             return {};
 
-        return {&shape, distance, ray, normal};
+        return {this, distance, ray, normal};
     }
 
     void Triangle::guess_normal()

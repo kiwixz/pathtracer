@@ -15,6 +15,7 @@ namespace pathtrace::shapes {
         std::transform(triangles.begin(), triangles.end(), std::back_inserter(transformed_triangles),
                        [&](const Triangle& triangle) {
                            Triangle new_triangle;
+                           new_triangle.material = material;
                            new_triangle.vertices = {transformation * glm::dvec4{triangle.vertices[0], 1},
                                                     transformation * glm::dvec4{triangle.vertices[1], 1},
                                                     transformation * glm::dvec4{triangle.vertices[2], 1}};
@@ -30,7 +31,7 @@ namespace pathtrace::shapes {
     {
         Intersection intersection;
         for (const Triangle& triangle : transformed_triangles) {
-            Intersection new_intersection = triangle.intersect(ray, *this);
+            Intersection new_intersection = triangle.intersect(ray);
             if (new_intersection && new_intersection.distance < intersection.distance) {
                 intersection = std::move(new_intersection);
             }
