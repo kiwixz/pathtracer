@@ -19,11 +19,12 @@ namespace pathtracer {
             std::string output;
             bool watch;
 
-            double gamma = 0;
+            double gamma;
             bool tag_software;
             bool tag_source;
 
             double dithering;
+            int nr_threads;
         };
 
         constexpr std::string_view version = "(build " __DATE__ " " __TIME__ ")";
@@ -49,7 +50,7 @@ namespace pathtracer {
 
             logger->info("generating image...");
             ProfClock::time_point start = ProfClock::now();
-            pathtrace::Image image = pathtrace::Renderer{}.render(scene);
+            pathtrace::Image image = pathtrace::Renderer{}.render(scene, args.nr_threads);
             std::string duration = format_time(std::chrono::duration<double>{ProfClock::now() - start}.count());
             logger->info("generated image in {}", duration);
 
@@ -63,7 +64,6 @@ namespace pathtracer {
             if (args.gamma) {
                 uint32_t gamma = static_cast<uint32_t>(1 / args.gamma * 100'000);
                 gamma = endian::host_to_big(gamma);
-                fmt::print("{}, {}\n", args.gamma, gamma);
                 lodepng_chunk_create(&info.unknown_chunks_data[0], &info.unknown_chunks_size[0],
                                      sizeof(gamma), "gAMA", reinterpret_cast<const uint8_t*>(&gamma));
             }
@@ -118,12 +118,13 @@ namespace pathtracer {
             ("w,watch", "Watch input file for modification instead of exiting", cxxopts::value(args.watch)->default_value("false"))
         ;
         options.add_options("metadata")
-            ("gamma", "Fake gamma", cxxopts::value(args.gamma))
+            ("gamma", "Fake gamma", cxxopts::value(args.gamma)->default_value("0.0"))
             ("tag-software", "Allow software tag", cxxopts::value(args.tag_software)->default_value("true"))
             ("tag-source", "Embed scene as source tag", cxxopts::value(args.tag_source)->default_value("true"))
         ;
         options.add_options("rendering")
             ("dithering", "Ratio of dithering", cxxopts::value(args.dithering)->default_value("1.0"))
+            ("t,threads", "Number of threads", cxxopts::value(args.nr_threads)->default_value("0"))
         ;
         // clang-format on
 
