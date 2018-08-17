@@ -87,7 +87,6 @@ misc:
             exit $err
         '
 
-
 pages:
     stage: deploy
     before_script:
@@ -95,7 +94,7 @@ pages:
         - apk add doxygen git graphviz ttf-freefont
     script:
         - |
-            for branch in feature/misc; do  # TODO add master when ready
+            for branch in develop; do  # TODO add master when ready
                 echo -e "\n\e[1;97;44m > Generating documentation for $branch... \e[0m"
                 git checkout "$branch"
                 mkdir -p "build/doc"
@@ -107,6 +106,6 @@ pages:
     artifacts:
         paths:
             - public
-    #only:
-    #    - develop
-    #    - master
+    only:
+        - develop
+        - master
