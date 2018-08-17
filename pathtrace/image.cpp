@@ -1,4 +1,4 @@
-#include "pathtrace/image.h"
+#include "image.h"
 #include <glm/common.hpp>
 
 namespace pathtrace {

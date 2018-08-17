@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pathtrace/image.h"
-#include "pathtrace/scene.h"
+#include <pathtrace/image.h>
+#include <pathtrace/scene.h>
 
 namespace pathtrace {
     class Renderer {

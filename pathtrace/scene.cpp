@@ -1,5 +1,5 @@
-#include "pathtrace/scene.h"
-#include "pathtrace/serializers.h"
+#include "scene.h"
+#include <pathtrace/serializers.h>
 #include <nlohmann/json.hpp>
 #include <filesystem>
 #include <fstream>

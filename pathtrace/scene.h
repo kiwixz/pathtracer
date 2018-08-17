@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pathtrace/image.h"
-#include "pathtrace/shape.h"
+#include <pathtrace/image.h>
+#include <pathtrace/shape.h>
 #include <glm/trigonometric.hpp>
 #include <memory>
 #include <string>

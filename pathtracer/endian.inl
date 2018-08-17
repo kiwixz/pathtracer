@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pathtracer/endian.h"
+#include "endian.h"
 #include <cstdint>
 #include <type_traits>
 

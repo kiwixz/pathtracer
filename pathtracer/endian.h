@@ -29,4 +29,4 @@ namespace pathtracer::endian {
     constexpr T little_to_host(T value);
 }  // namespace pathtracer::endian
 
-#include "pathtracer/endian.inl"
+#include "endian.inl"

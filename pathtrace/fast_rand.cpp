@@ -1,4 +1,4 @@
-#include "pathtrace/fast_rand.h"
+#include "fast_rand.h"
 #include <glm/geometric.hpp>
 #include <glm/gtc/constants.hpp>
 #include <algorithm>

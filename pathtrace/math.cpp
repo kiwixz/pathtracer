@@ -1,4 +1,4 @@
-#include "pathtrace/math.h"
+#include "math.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/euler_angles.hpp>

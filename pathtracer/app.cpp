@@ -1,6 +1,6 @@
-#include "pathtracer/app.h"
-#include "pathtrace/renderer.h"
-#include "pathtracer/endian.h"
+#include "app.h"
+#include <pathtrace/renderer.h>
+#include <pathtracer/endian.h>
 #include <cxxopts.hpp>
 #include <lodepng.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
