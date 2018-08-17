@@ -64,14 +64,11 @@ namespace pathtrace {
         Intersection RendererWork::intersect(const Ray& ray)
         {
             Intersection intersection;
-
             for (const std::unique_ptr<Shape>& shape : scene_.shapes) {
                 Intersection new_intersection = shape->intersect(ray);
-                if (new_intersection && new_intersection.distance < intersection.distance) {
+                if (new_intersection && new_intersection.distance < intersection.distance)
                     intersection = std::move(new_intersection);
-                }
             }
-
             return intersection;
         }
 

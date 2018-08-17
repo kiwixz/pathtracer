@@ -13,17 +13,15 @@ namespace pathtrace {
         OctreeNode() = default;
         OctreeNode(const Aabb& aabb);
 
-        bool empty() const;
         void add_triangle(const shapes::Triangle& triangle);
+        Intersection intersect(const Ray& ray, double max_distance = std::numeric_limits<double>::infinity()) const;
 
     private:
-        // for elements
-        using Nothing = std::monostate;
-        using Triangles = std::vector<shapes::Triangle>;
-        using Children = std::unique_ptr<std::array<OctreeNode, 8>>;
-
         Aabb aabb_;
-        std::variant<Nothing, Children, Triangles> elements_;
+        std::vector<shapes::Triangle> triangles_;
+        std::unique_ptr<std::array<OctreeNode, 8>> children_;  // allocated only when at least one is non-empty
+
+        void add_triangle_placed(const shapes::Triangle& triangle);
     };
 
 

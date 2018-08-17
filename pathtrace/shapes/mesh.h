@@ -1,5 +1,6 @@
 #pragma once
 
+#include <pathtrace/octree.h>
 #include <pathtrace/shape.h>
 #include <pathtrace/shapes/triangle.h>
 #include <vector>
@@ -12,7 +13,7 @@ namespace pathtrace::shapes {
         std::vector<Triangle> triangles;
 
         // baked
-        std::vector<Triangle> transformed_triangles;
+        Octree octree;
 
 
         Mesh() = default;

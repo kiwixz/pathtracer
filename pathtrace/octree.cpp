@@ -29,55 +29,72 @@ namespace pathtrace {
         aabb_{aabb}
     {}
 
-    bool OctreeNode::empty() const
-    {
-        return std::holds_alternative<Nothing>(elements_);
-    }
-
     void OctreeNode::add_triangle(const shapes::Triangle& triangle)
     {
-        if (std::holds_alternative<Nothing>(elements_))
-            elements_ = std::vector<shapes::Triangle>{triangle};
-        else if (std::holds_alternative<Triangles>(elements_)) {
-            std::vector<shapes::Triangle>& triangles = std::get<Triangles>(elements_);
-            if (triangles.size() < min_triangles_intersect_aabb - 1) {
-                triangles.emplace_back(triangle);
+        if (triangles_.size() <= min_triangles_intersect_aabb - 1) {
+            if (triangles_.size() < min_triangles_intersect_aabb - 1)
+                triangles_.emplace_back(triangle);
+            else {  // evaluate triangles to make sure we dont have to add them in
+                std::vector<shapes::Triangle> old_triangles = std::move(triangles_);
+                triangles_.clear();
+
+                // initialize children
+                children_ = std::make_unique<std::array<OctreeNode, 8>>();
+                glm::dvec3 half = (aabb_.top_right - aabb_.bottom_left) / 2.0;
+                glm::dvec3 middle = aabb_.bottom_left + half;
+                for (int i = 0; i < 8; ++i) {
+                    glm::dvec3 bottom_left{i % 4 < 2 ? aabb_.bottom_left.x : middle.x,
+                                           i % 2 ? aabb_.bottom_left.y : middle.y,
+                                           i < 4 ? aabb_.bottom_left.z : middle.z};
+                    (*children_)[i] = {{bottom_left, bottom_left + half}};
+                }
+
+                for (shapes::Triangle& old_triangle : old_triangles)
+                    add_triangle_placed(old_triangle);
+                add_triangle_placed(triangle);
+            }
+        }
+        else
+            add_triangle_placed(triangle);
+    }
+
+    Intersection OctreeNode::intersect(const Ray& ray, double max_distance) const
+    {
+        Intersection intersection;
+        if (triangles_.size() >= min_triangles_intersect_aabb || children_) {
+            std::optional<double> distance = aabb_.intersect(ray);
+            if (!distance || distance > max_distance)
+                return {};
+
+            if (children_)
+                for (const OctreeNode& child : *children_) {
+                    Intersection new_intersection = child.intersect(ray, intersection.distance);
+                    if (new_intersection && new_intersection.distance < intersection.distance)
+                        intersection = std::move(new_intersection);
+                }
+        }
+
+        for (const shapes::Triangle& triangle : triangles_) {
+            Intersection new_intersection = triangle.intersect(ray);
+            if (new_intersection && new_intersection.distance < intersection.distance)
+                intersection = std::move(new_intersection);
+        }
+        return intersection;
+    }
+
+    void OctreeNode::add_triangle_placed(const shapes::Triangle& triangle)
+    {
+        // TODO triangle-aabb intersection?
+
+        for (OctreeNode& child : *children_)
+            if (child.aabb_.contains(triangle.vertices[0])
+                && child.aabb_.contains(triangle.vertices[1])
+                && child.aabb_.contains(triangle.vertices[2])) {
+                child.add_triangle(triangle);
                 return;
             }
 
-            std::vector<shapes::Triangle> old_triangles = std::move(triangles);
-
-            elements_ = std::make_unique<std::array<OctreeNode, 8>>();
-            std::array<OctreeNode, 8>& children = *std::get<Children>(elements_);
-            glm::dvec3 half = (aabb_.top_right - aabb_.bottom_left) / 2.0;
-            glm::dvec3 middle = aabb_.bottom_left + half;
-            for (int i = 0; i < 8; ++i) {
-                glm::dvec3 bottom_left{i % 4 < 2 ? aabb_.bottom_left.x : middle.x,
-                                       i % 2 ? aabb_.bottom_left.y : middle.y,
-                                       i < 4 ? aabb_.bottom_left.z : middle.z};
-                children[i] = {{bottom_left, bottom_left + half}};
-            }
-
-            for (const shapes::Triangle& old_triangle : old_triangles)
-                add_triangle(old_triangle);
-            add_triangle(triangle);
-        }
-        else if (std::holds_alternative<Children>(elements_)) {
-            std::array<OctreeNode, 8>& children = *std::get<Children>(elements_);
-
-            // TODO highly uneffective, replace by triangle-aabb intersection
-
-            for (OctreeNode& child : children)
-                if (child.aabb_.contains(triangle.vertices[0])
-                    && child.aabb_.contains(triangle.vertices[1])
-                    && child.aabb_.contains(triangle.vertices[2])) {
-                    child.add_triangle(triangle);
-                    return;
-                }
-
-            for (OctreeNode& child : children)
-                child.add_triangle(triangle);
-        }
+        triangles_.emplace_back(triangle);
     }
 
 

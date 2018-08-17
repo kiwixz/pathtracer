@@ -10,7 +10,7 @@ namespace pathtrace::shapes {
         glm::dmat4 transformation = math::transform(position, rotation, scale);
         glm::dmat4 pseudo_transformation = glm::transpose(glm::inverse(transformation));  // do not deform normals etc
 
-        transformed_triangles.clear();
+        std::vector<Triangle> transformed_triangles;
         transformed_triangles.reserve(triangles.size());
         std::transform(triangles.begin(), triangles.end(), std::back_inserter(transformed_triangles),
                        [&](const Triangle& triangle) {
@@ -25,18 +25,13 @@ namespace pathtrace::shapes {
                            new_triangle.bake();
                            return new_triangle;
                        });
+
+        octree = {transformed_triangles};
     }
 
     Intersection Mesh::intersect(const Ray& ray) const
     {
-        Intersection intersection;
-        for (const Triangle& triangle : transformed_triangles) {
-            Intersection new_intersection = triangle.intersect(ray);
-            if (new_intersection && new_intersection.distance < intersection.distance) {
-                intersection = std::move(new_intersection);
-            }
-        }
-        return intersection;
+        return octree.intersect(ray);
     }
 
     void Mesh::load_obj(const std::string& path)
