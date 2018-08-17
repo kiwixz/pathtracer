@@ -96,7 +96,7 @@ pages:
         - |
             for branch in develop; do  # TODO add master when ready
                 echo -e "\n\e[1;97;44m > Generating documentation for $branch... \e[0m"
-                git checkout "$branch"
+                git checkout "origin/$branch"
                 mkdir -p "build/doc"
                 doxygen
                 mkdir -p "build/public/$branch"
