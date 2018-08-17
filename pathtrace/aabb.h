@@ -5,7 +5,8 @@
 #include <optional>
 
 namespace pathtrace {
-    struct Aabb {  /// axis-aligned bounding box
+    /// axis-aligned bounding box
+    struct Aabb {
         glm::dvec3 bottom_left;
         glm::dvec3 top_right;
 
