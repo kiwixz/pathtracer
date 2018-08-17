@@ -149,6 +149,7 @@
     <ClCompile Include="aabb.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="fast_rand.cpp" />
+    <ClCompile Include="octree.cpp" />
     <ClCompile Include="shapes\mesh.cpp" />
     <ClCompile Include="shapes\plane.cpp" />
     <ClCompile Include="ray.cpp" />
@@ -158,11 +159,13 @@
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="shapes\sphere.cpp" />
     <ClCompile Include="math.cpp" />
+    <ClCompile Include="shapes\triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aabb.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="fast_rand.h" />
+    <ClInclude Include="octree.h" />
     <ClInclude Include="shapes\mesh.h" />
     <ClInclude Include="shapes\plane.h" />
     <ClInclude Include="ray.h" />
@@ -172,6 +175,7 @@
     <ClInclude Include="shape.h" />
     <ClInclude Include="shapes\sphere.h" />
     <ClInclude Include="math.h" />
+    <ClInclude Include="shapes\triangle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="image.inl" />
