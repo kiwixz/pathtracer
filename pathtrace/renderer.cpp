@@ -169,38 +169,15 @@ namespace pathtrace {
         work.clear();
 
         std::vector<Color> pixels(scene.settings.width * scene.settings.height);
-        int nr_threads = static_cast<int>(thread_pool_.size());
 
-        if (scene.settings.width >= scene.settings.height) {
-            // distribute work by columns
-            nr_threads = std::min(nr_threads, scene.settings.width);
-            int x_min = 0;
-            for (int rem_threads = nr_threads; rem_threads > 1; --rem_threads) {
-                int x_max = x_min + (scene.settings.width - x_min) / rem_threads;
-                work.emplace_back(std::async(std::launch::async,
-                                             RendererWork{pixels, scene},
-                                             x_min, x_max, 0, scene.settings.height));
-                x_min = x_max;
-            }
-            work.emplace_back(std::async(std::launch::async,
-                                         RendererWork{pixels, scene},
-                                         x_min, scene.settings.width, 0, scene.settings.height));
-        }
-        else {
-            // distribute work by rows
-            nr_threads = std::min(nr_threads, scene.settings.height);
-            int y_min = 0;
-            for (int rem_threads = nr_threads; rem_threads > 1; --rem_threads) {
-                int y_max = y_min + (scene.settings.height - y_min) / rem_threads;
-                work.emplace_back(std::async(std::launch::async,
-                                             RendererWork{pixels, scene},
-                                             0, scene.settings.width, y_min, y_max));
-                y_min = y_max;
-            }
-            work.emplace_back(std::async(std::launch::async,
-                                         RendererWork{pixels, scene},
-                                         0, scene.settings.width, y_min, scene.settings.height));
-        }
+        if (scene.settings.width >= scene.settings.height)  // distribute work by columns
+            for (int x = 0; x < scene.settings.width; ++x)
+                work.emplace_back(thread_pool_.add_work(RendererWork{pixels, scene},
+                                                        x, x + 1, 0, scene.settings.height));
+        else  // distribute work by rows
+            for (int y = 0; y < scene.settings.height; ++y)
+                work.emplace_back(thread_pool_.add_work(RendererWork{pixels, scene},
+                                                        0, scene.settings.width, y, y + 1));
 
         for (std::future<void>& future : work)
             future.get();
