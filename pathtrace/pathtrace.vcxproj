@@ -166,6 +166,7 @@
     <ClCompile Include="shapes\sphere.cpp" />
     <ClCompile Include="math.cpp" />
     <ClCompile Include="shapes\triangle.cpp" />
+    <ClCompile Include="thread_pool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aabb.h" />
@@ -182,10 +183,12 @@
     <ClInclude Include="shapes\sphere.h" />
     <ClInclude Include="math.h" />
     <ClInclude Include="shapes\triangle.h" />
+    <ClInclude Include="thread_pool.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="image.inl" />
     <None Include="serializers.inl" />
+    <None Include="thread_pool.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

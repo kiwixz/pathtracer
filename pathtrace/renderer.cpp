@@ -2,7 +2,6 @@
 #include <pathtrace/fast_rand.h>
 #include <pathtrace/math.h>
 #include <glm/gtc/constants.hpp>
-#include <future>
 
 namespace pathtrace {
     namespace {
@@ -146,22 +145,35 @@ namespace pathtrace {
     }  // namespace
 
 
-    Image Renderer::render(const Scene& scene, unsigned nr_threads_)
+    Renderer::Renderer(size_t nr_threads)
     {
-        int nr_threads = (nr_threads_ ? nr_threads_ : std::thread::hardware_concurrency() - 1);
+        resize_thread_pool(nr_threads);
+    }
+
+    void Renderer::resize_thread_pool(size_t nr_threads_)
+    {
+        size_t nr_threads = (nr_threads_ ? nr_threads_ : std::thread::hardware_concurrency() - 1);
         if (!nr_threads)
             throw std::runtime_error{"could not guess number of threads"};
+        thread_pool_.resize(nr_threads);
+    }
+
+    Image Renderer::render(const Scene& scene)
+    {
+        std::vector<std::future<void>> work;
 
         for (const std::unique_ptr<Shape>& shape : scene.shapes)
-            shape->bake();
+            thread_pool_.add_work(&Shape::bake, shape.get());
+        for (std::future<void>& future : work)
+            future.get();
+        work.clear();
 
         std::vector<Color> pixels(scene.settings.width * scene.settings.height);
-        std::vector<std::future<void>> work;
+        int nr_threads = static_cast<int>(thread_pool_.size());
 
         if (scene.settings.width >= scene.settings.height) {
             // distribute work by columns
-            if (nr_threads > scene.settings.width)
-                nr_threads = scene.settings.width;
+            nr_threads = std::min(nr_threads, scene.settings.width);
             int x_min = 0;
             for (int rem_threads = nr_threads; rem_threads > 1; --rem_threads) {
                 int x_max = x_min + (scene.settings.width - x_min) / rem_threads;
@@ -176,8 +188,7 @@ namespace pathtrace {
         }
         else {
             // distribute work by rows
-            if (nr_threads > scene.settings.height)
-                nr_threads = scene.settings.height;
+            nr_threads = std::min(nr_threads, scene.settings.height);
             int y_min = 0;
             for (int rem_threads = nr_threads; rem_threads > 1; --rem_threads) {
                 int y_max = y_min + (scene.settings.height - y_min) / rem_threads;
