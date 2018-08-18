@@ -148,7 +148,7 @@ namespace pathtrace {
 
     Image Renderer::render(const Scene& scene, unsigned nr_threads_)
     {
-        int nr_threads = (nr_threads_ ? nr_threads_ : std::thread::hardware_concurrency());
+        int nr_threads = (nr_threads_ ? nr_threads_ : std::thread::hardware_concurrency() - 1);
         if (!nr_threads)
             throw std::runtime_error{"could not guess number of threads"};
 
