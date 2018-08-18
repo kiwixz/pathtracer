@@ -1,6 +1,7 @@
 #pragma once
 
 #include "thread_pool.h"
+#include <functional>
 
 namespace pathtrace {
     template <typename F, typename... Args>
