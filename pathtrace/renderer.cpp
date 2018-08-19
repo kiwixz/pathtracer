@@ -2,7 +2,6 @@
 #include <pathtrace/fast_rand.h>
 #include <pathtrace/math.h>
 #include <glm/gtc/constants.hpp>
-#include <future>
 
 namespace pathtrace {
     namespace {
@@ -146,50 +145,39 @@ namespace pathtrace {
     }  // namespace
 
 
-    Image Renderer::render(const Scene& scene, unsigned nr_threads_)
+    Renderer::Renderer(size_t nr_threads)
     {
-        int nr_threads = (nr_threads_ ? nr_threads_ : std::thread::hardware_concurrency() - 1);
+        resize_thread_pool(nr_threads);
+    }
+
+    void Renderer::resize_thread_pool(size_t nr_threads_)
+    {
+        size_t nr_threads = (nr_threads_ ? nr_threads_ : std::thread::hardware_concurrency() - 1);
         if (!nr_threads)
             throw std::runtime_error{"could not guess number of threads"};
+        thread_pool_.resize(nr_threads);
+    }
 
-        for (const std::unique_ptr<Shape>& shape : scene.shapes)
-            shape->bake();
-
-        std::vector<Color> pixels(scene.settings.width * scene.settings.height);
+    Image Renderer::render(const Scene& scene)
+    {
         std::vector<std::future<void>> work;
 
-        if (scene.settings.width >= scene.settings.height) {
-            // distribute work by columns
-            if (nr_threads > scene.settings.width)
-                nr_threads = scene.settings.width;
-            int x_min = 0;
-            for (int rem_threads = nr_threads; rem_threads > 1; --rem_threads) {
-                int x_max = x_min + (scene.settings.width - x_min) / rem_threads;
-                work.emplace_back(std::async(std::launch::async,
-                                             RendererWork{pixels, scene},
-                                             x_min, x_max, 0, scene.settings.height));
-                x_min = x_max;
-            }
-            work.emplace_back(std::async(std::launch::async,
-                                         RendererWork{pixels, scene},
-                                         x_min, scene.settings.width, 0, scene.settings.height));
-        }
-        else {
-            // distribute work by rows
-            if (nr_threads > scene.settings.height)
-                nr_threads = scene.settings.height;
-            int y_min = 0;
-            for (int rem_threads = nr_threads; rem_threads > 1; --rem_threads) {
-                int y_max = y_min + (scene.settings.height - y_min) / rem_threads;
-                work.emplace_back(std::async(std::launch::async,
-                                             RendererWork{pixels, scene},
-                                             0, scene.settings.width, y_min, y_max));
-                y_min = y_max;
-            }
-            work.emplace_back(std::async(std::launch::async,
-                                         RendererWork{pixels, scene},
-                                         0, scene.settings.width, y_min, scene.settings.height));
-        }
+        for (const std::unique_ptr<Shape>& shape : scene.shapes)
+            thread_pool_.add_work(&Shape::bake, shape.get());
+        for (std::future<void>& future : work)
+            future.get();
+        work.clear();
+
+        std::vector<Color> pixels(scene.settings.width * scene.settings.height);
+
+        if (scene.settings.width >= scene.settings.height)  // distribute work by columns
+            for (int x = 0; x < scene.settings.width; ++x)
+                work.emplace_back(thread_pool_.add_work(RendererWork{pixels, scene},
+                                                        x, x + 1, 0, scene.settings.height));
+        else  // distribute work by rows
+            for (int y = 0; y < scene.settings.height; ++y)
+                work.emplace_back(thread_pool_.add_work(RendererWork{pixels, scene},
+                                                        0, scene.settings.width, y, y + 1));
 
         for (std::future<void>& future : work)
             future.get();

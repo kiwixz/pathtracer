@@ -53,6 +53,9 @@
     <ClCompile Include="shapes\triangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="thread_pool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene.h">
@@ -97,12 +100,18 @@
     <ClInclude Include="shapes\triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="thread_pool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="image.inl">
       <Filter>Header Files</Filter>
     </None>
     <None Include="serializers.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="thread_pool.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

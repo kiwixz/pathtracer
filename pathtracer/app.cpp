@@ -24,7 +24,7 @@ namespace pathtracer {
             bool tag_source;
 
             double dithering;
-            int nr_threads;
+            size_t nr_threads;
         };
 
         constexpr std::string_view version = "(build " __DATE__ " " __TIME__ ")";
@@ -50,7 +50,7 @@ namespace pathtracer {
 
             logger->info("generating image...");
             ProfClock::time_point start = ProfClock::now();
-            pathtrace::Image image = pathtrace::Renderer{}.render(scene, args.nr_threads);
+            pathtrace::Image image = pathtrace::Renderer{args.nr_threads}.render(scene);
             std::string duration = format_time(std::chrono::duration<double>{ProfClock::now() - start}.count());
             logger->info("generated image in {}", duration);
 
