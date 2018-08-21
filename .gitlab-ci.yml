@@ -94,7 +94,7 @@ pages:
         - apk add doxygen git graphviz ttf-freefont
     script:
         - |
-            for branch in develop; do  # TODO add master when ready
+            for branch in master; do
                 echo -e "\n\e[1;97;44m > Generating documentation for $branch... \e[0m"
                 git checkout "origin/$branch"
                 mkdir -p "build/doc"
@@ -107,5 +107,4 @@ pages:
         paths:
             - public
     only:
-        - develop
         - master
