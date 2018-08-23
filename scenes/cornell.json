@@ -1,0 +1,117 @@
+{
+    "settings": {
+        "width": 640,
+        "height": 480,
+        "samples": 64,
+        "min_bounces": 6,
+        "max_bounces": 12,
+        "background_color": [0, 0, 0]
+    },
+    "camera": {
+        "position": [0, 10, 40],
+        "rotation": [0, -2.5, 0],
+        "scale": [1, 1, 1],
+        "field_of_view": 30
+    },
+    "shapes": [
+        {
+            "name": "left",
+            "type": "plane",
+            "position": [-10, 0, 0],
+            "rotation": [0, 0, 90],
+            "material": {
+                "reflection": "diffuse",
+                "emission": [0, 0, 0],
+                "color": [0.75, 0.25, 0.25]
+            }
+        },
+        {
+            "name": "top",
+            "type": "plane",
+            "position": [0, 16.18, 0],
+            "rotation": [0, 0, 0],
+            "material": {
+                "reflection": "diffuse",
+                "emission": [0, 0, 0],
+                "color": [0.75, 0.75, 0.75]
+            }
+        },
+        {
+            "name": "right",
+            "type": "plane",
+            "position": [10, 0, 0],
+            "rotation": [0, 0, 90],
+            "material": {
+                "reflection": "diffuse",
+                "emission": [0, 0, 0],
+                "color": [0.25, 0.25, 0.75]
+            }
+        },
+        {
+            "name": "bottom",
+            "type": "plane",
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "material": {
+                "reflection": "diffuse",
+                "emission": [0, 0, 0],
+                "color": [0.75, 0.75, 0.75]
+            }
+        },
+        {
+            "name": "back",
+            "type": "plane",
+            "position": [0, 0, -18],
+            "rotation": [0, 90, 0],
+            "material": {
+                "reflection": "diffuse",
+                "emission": [0, 0, 0],
+                "color": [0.75, 0.75, 0.75]
+            }
+        },
+        {
+            "name": "front",
+            "type": "plane",
+            "position": [0, 0, 41],
+            "rotation": [0, 90, 0],
+            "material": {
+                "reflection": "diffuse",
+                "emission": [0, 0, 0],
+                "color": [0, 0, 0]
+            }
+        },
+        {
+            "name": "light",
+            "type": "sphere",
+            "position": [0, 116.1, 0],
+            "radius": 100,
+            "material": {
+                "reflection": "diffuse",
+                "emission": [12, 12, 12],
+                "color": [0, 0, 0]
+            }
+        },
+        {
+            "name": "mirror",
+            "type": "sphere",
+            "position": [-4.5, 3.5, -8],
+            "radius": 3.25,
+            "material": {
+                "reflection": "specular",
+                "emission": [0, 0, 0],
+                "color": [1, 1, 1]
+            }
+        },
+        {
+            "name": "glass",
+            "type": "sphere",
+            "position": [4.5, 3.5, -1],
+            "radius": 3.25,
+            "material": {
+                "reflection": "refractive",
+                "emission": [0, 0, 0],
+                "color": [1, 1, 1]
+            }
+        }
+    ]
+}
