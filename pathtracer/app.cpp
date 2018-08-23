@@ -17,6 +17,7 @@ namespace pathtracer {
             bool help;
             std::string input;
             std::string output;
+            bool dump;
             bool watch;
 
             double gamma;
@@ -27,7 +28,45 @@ namespace pathtracer {
             size_t nr_threads;
         };
 
+
         constexpr std::string_view version = "(build " __DATE__ " " __TIME__ ")";
+
+
+        pathtrace::Scene load_scene(const std::string& path)
+        {
+            pathtrace::Scene scene;
+
+            try {
+                scene.load_from_file(path);
+                return scene;
+            }
+            catch (const std::exception& ex) {
+                spdlog::get("stderr")->debug("could not load scene as JSON file: {}", ex.what());
+            }
+
+
+            unsigned err;
+            std::vector<uint8_t> file;
+            err = lodepng::load_file(file, path);
+            if (err)
+                throw std::runtime_error{"could not open input file"};
+
+            std::vector<uint8_t> image;
+            unsigned width;
+            unsigned height;
+            lodepng::State state;
+            err = lodepng::decode(image, width, height, state, file);
+            if (err)
+                throw std::runtime_error{"could not load scene"};
+
+            std::string source;
+            for (size_t i = 0; i < state.info_png.text_num; ++i)
+                if (state.info_png.text_keys[i] == std::string{"Source"})
+                    source = state.info_png.text_strings[i];
+            scene.load_from_json(source);
+
+            return scene;
+        }
 
         std::string format_time(double seconds)
         {
@@ -45,8 +84,7 @@ namespace pathtracer {
 
             std::shared_ptr<spdlog::logger> logger = spdlog::get("stderr");
 
-            pathtrace::Scene scene;
-            scene.load_from_file(args.input);
+            pathtrace::Scene scene = load_scene(args.input);
 
             logger->info("generating image...");
             ProfClock::time_point start = ProfClock::now();
@@ -69,9 +107,8 @@ namespace pathtracer {
             }
             if (args.tag_software)
                 lodepng_add_text(&info, "Software", fmt::format("pathtrace {}", version).c_str());
-            if (args.tag_source) {
+            if (args.tag_source)
                 lodepng_add_text(&info, "Source", scene.save_to_json().c_str());
-            }
 
             std::vector<uint8_t> png;
             unsigned err = lodepng::encode(png, image.convert<uint8_t>(args.dithering), image.width(), image.height(), state);
@@ -84,6 +121,16 @@ namespace pathtracer {
             ofs.write(reinterpret_cast<const char*>(png.data()), png.size());
 
             logger->info("image written");
+        }
+
+        void do_args(const AppArgs& args)
+        {
+            if (args.dump) {
+                load_scene(args.input).save_to_file(args.output);
+                spdlog::get("stderr")->info("scene dumped");
+            }
+            else
+                full_render(args);
         }
     }  // namespace
 
@@ -113,8 +160,9 @@ namespace pathtracer {
         // clang-format off
         options.add_options()
             ("h,help", "Show help", cxxopts::value(args.help)->default_value("false"))
-            ("i,input", "Input scene filename", cxxopts::value(args.input))
-            ("o,output", "Output image filename", cxxopts::value(args.output))
+            ("i,input", "Input filename (JSON scene, or PNG with source tag)", cxxopts::value(args.input))
+            ("o,output", "Output filename", cxxopts::value(args.output))
+            ("d,dump", "Dump scene instead of rendering it", cxxopts::value(args.dump)->default_value("false"))
             ("w,watch", "Watch input file for modification instead of exiting", cxxopts::value(args.watch)->default_value("false"))
         ;
         options.add_options("metadata")
@@ -150,7 +198,7 @@ namespace pathtracer {
             throw std::runtime_error{"no output file"};
 
         if (!args.watch) {
-            full_render(args);
+            do_args(args);
             return;
         }
 
@@ -161,7 +209,7 @@ namespace pathtracer {
             std::filesystem::file_time_type new_last = std::filesystem::last_write_time(input_path);
             if (new_last > last) {
                 try {
-                    full_render(args);
+                    do_args(args);
                 }
                 catch (const std::exception& ex) {
                     logger->error("exception: {}", ex.what());
