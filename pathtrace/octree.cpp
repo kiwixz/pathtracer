@@ -70,14 +70,14 @@ namespace pathtrace {
 
         for (const shapes::Triangle& triangle : triangles_) {
             Intersection new_intersection = triangle.intersect(ray);
-            if (new_intersection && new_intersection.distance < intersection.distance)
+            if (new_intersection && new_intersection.distance() < intersection.distance())
                 intersection = std::move(new_intersection);
         }
 
         if (children_)
             for (const OctreeNode& child : *children_) {
-                Intersection new_intersection = child.intersect(ray, intersection.distance);
-                if (new_intersection && new_intersection.distance < intersection.distance)
+                Intersection new_intersection = child.intersect(ray, intersection.distance());
+                if (new_intersection && new_intersection.distance() < intersection.distance())
                     intersection = std::move(new_intersection);
             }
 

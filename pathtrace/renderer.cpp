@@ -65,7 +65,7 @@ namespace pathtrace {
             Intersection intersection;
             for (const std::unique_ptr<Shape>& shape : scene_.shapes) {
                 Intersection new_intersection = shape->intersect(ray);
-                if (new_intersection && new_intersection.distance < intersection.distance)
+                if (new_intersection && new_intersection.distance() < intersection.distance())
                     intersection = std::move(new_intersection);
             }
             return intersection;
@@ -77,9 +77,9 @@ namespace pathtrace {
             if (!intersection)
                 return scene_.settings.background_color;
 
-            const Shape& shape = *intersection.shape;
-            const glm::dvec3& point = intersection.point;
-            const glm::dvec3& normal = intersection.normal;
+            const Shape& shape = *intersection.shape();
+            const glm::dvec3& point = intersection.point();
+            const glm::dvec3& normal = intersection.normal();
             const Material& mat = shape.material;
 
             Color color = mat.color;
