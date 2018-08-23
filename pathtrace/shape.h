@@ -26,16 +26,23 @@ namespace pathtrace {
     };
 
 
-    struct Intersection {
-        const Shape* shape = nullptr;
-        double distance = std::numeric_limits<double>::infinity();
-        glm::dvec3 point;
-        glm::dvec3 normal;
-
+    class Intersection {
+    public:
         Intersection() = default;
         Intersection(const Shape* shape, double distance, const Ray& ray, const glm::dvec3& normal);
         Intersection(const Shape* shape, double distance, const glm::dvec3& point, const glm::dvec3& normal);
         explicit operator bool() const;
+
+        const Shape* shape() const;
+        double distance() const;
+        const glm::dvec3& point() const;
+        const glm::dvec3& normal() const;
+
+    private:
+        const Shape* shape_ = nullptr;
+        double distance_ = std::numeric_limits<double>::infinity();
+        glm::dvec3 point_;
+        glm::dvec3 normal_;
     };
 
 

@@ -11,11 +11,28 @@ namespace pathtrace {
     {}
 
     Intersection::Intersection(const Shape* shape, double distance, const glm::dvec3& point, const glm::dvec3& normal) :
-        shape{shape}, distance{distance}, point{point}, normal{normal}
+        shape_{shape}, distance_{distance}, point_{point}, normal_{normal}
     {}
 
     Intersection::operator bool() const
     {
-        return shape;
+        return shape_;
+    }
+
+    const Shape* Intersection::shape() const
+    {
+        return shape_;
+    }
+    double Intersection::distance() const
+    {
+        return distance_;
+    }
+    const glm::dvec3& Intersection::point() const
+    {
+        return point_;
+    }
+    const glm::dvec3& Intersection::normal() const
+    {
+        return normal_;
     }
 }  // namespace pathtrace
