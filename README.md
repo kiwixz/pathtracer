@@ -1,5 +1,18 @@
 # pathtracer
 
+## Overview
+
+The aim of this project is to implement a pathtracer with a clean and easily understandable code.
+
+## Screenshots
+
+![](https://i.imgur.com/Ni1eBeE.png "Cornell Box
+50000 spp
+3h30")
+![](https://i.imgur.com/VM69Ebn.png "Refractive Bunny
+1000 spp
+3h30")
+
 ## License
 
 Copyright (c) 2018 kiwixz. All rights reserved.
