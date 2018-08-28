@@ -12,7 +12,7 @@ namespace pathtrace {
 
 
         Aabb() = default;
-        Aabb(const glm::dvec3& bottom_left, const glm::dvec3& top_right);
+        Aabb(const glm::dvec3& _bottom_left, const glm::dvec3& _top_right);
         std::optional<double> intersect(const Ray& ray) const;
         bool contains(const glm::dvec3& point) const;
     };

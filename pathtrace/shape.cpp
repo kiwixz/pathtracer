@@ -1,8 +1,8 @@
 #include "shape.h"
 
 namespace pathtrace {
-    Material::Material(Reflection reflection, const Color& emission, const Color& color) :
-        reflection{reflection}, emission{emission}, color{color}
+    Material::Material(Reflection _reflection, const Color& _emission, const Color& _color) :
+        reflection{_reflection}, emission{_emission}, color{_color}
     {}
 
 

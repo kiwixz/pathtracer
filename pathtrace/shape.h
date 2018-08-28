@@ -22,7 +22,7 @@ namespace pathtrace {
         Color color;
 
         Material() = default;
-        Material(Reflection reflection, const Color& emission, const Color& color);
+        Material(Reflection _reflection, const Color& _emission, const Color& _color);
     };
 
 
