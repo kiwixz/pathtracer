@@ -95,12 +95,14 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/w34062 /w34191 /w34242 /w34254 /w34263 /w34264 /w34265 /w34266 /w34287 /w34289 /w34296 /w34355 /w34426 /w34437 /w34545 /w34546 /w34547 /w34548 /w34549 /w34555 /w34557 /w34574 /w34596 /w34598 /w34599 /w34605 /w34608 /w34619 /w34654 /w34668 /w34768 /w34774 /w34777 /w34826 /w34837 /w34905 /w34906 /w34917 /w34946 /w34986 /w35031 /w35032 /w35034 /w35035 /w35038 /w35039 /w35042  /wd4355 /wd4774 /wd5039 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4201</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -109,12 +111,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/w34062 /w34191 /w34242 /w34254 /w34263 /w34264 /w34265 /w34266 /w34287 /w34289 /w34296 /w34355 /w34426 /w34437 /w34545 /w34546 /w34547 /w34548 /w34549 /w34555 /w34557 /w34574 /w34596 /w34598 /w34599 /w34605 /w34608 /w34619 /w34654 /w34668 /w34768 /w34774 /w34777 /w34826 /w34837 /w34905 /w34906 /w34917 /w34946 /w34986 /w35031 /w35032 /w35034 /w35035 /w35038 /w35039 /w35042  /wd4355 /wd4774 /wd5039 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4201</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,7 +127,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -133,6 +137,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/w34062 /w34191 /w34242 /w34254 /w34263 /w34264 /w34265 /w34266 /w34287 /w34289 /w34296 /w34355 /w34426 /w34437 /w34545 /w34546 /w34547 /w34548 /w34549 /w34555 /w34557 /w34574 /w34596 /w34598 /w34599 /w34605 /w34608 /w34619 /w34654 /w34668 /w34768 /w34774 /w34777 /w34826 /w34837 /w34905 /w34906 /w34917 /w34946 /w34986 /w35031 /w35032 /w35034 /w35035 /w35038 /w35039 /w35042  /wd4355 /wd4774 /wd5039 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4201</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -143,7 +149,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -153,6 +159,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/w34062 /w34191 /w34242 /w34254 /w34263 /w34264 /w34265 /w34266 /w34287 /w34289 /w34296 /w34355 /w34426 /w34437 /w34545 /w34546 /w34547 /w34548 /w34549 /w34555 /w34557 /w34574 /w34596 /w34598 /w34599 /w34605 /w34608 /w34619 /w34654 /w34668 /w34768 /w34774 /w34777 /w34826 /w34837 /w34905 /w34906 /w34917 /w34946 /w34986 /w35031 /w35032 /w35034 /w35035 /w35038 /w35039 /w35042  /wd4355 /wd4774 /wd5039 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4201</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

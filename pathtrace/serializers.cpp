@@ -57,17 +57,17 @@ namespace {
     using ShapeSaver = std::function<void(const Shape&, nlohmann::json&)>;
     const std::unordered_map<std::string, ShapeSaver> map_shape_savers = {
             {shape_type<shapes::Sphere>(), [](const Shape& shape_, nlohmann::json& j) {
-                 auto& shape = reinterpret_cast<const shapes::Sphere&>(shape_);
+                 auto& shape = static_cast<const shapes::Sphere&>(shape_);
                  j["position"] = shape.position;
                  j["radius"] = shape.radius;
              }},
             {shape_type<shapes::Plane>(), [](const Shape& shape_, nlohmann::json& j) {
-                 auto& shape = reinterpret_cast<const shapes::Plane&>(shape_);
+                 auto& shape = static_cast<const shapes::Plane&>(shape_);
                  j["position"] = shape.position;
                  j["rotation"] = glm::degrees(shape.rotation);
              }},
             {shape_type<shapes::Mesh>(), [](const Shape& shape_, nlohmann::json& j) {
-                 auto& shape = reinterpret_cast<const shapes::Mesh&>(shape_);
+                 auto& shape = static_cast<const shapes::Mesh&>(shape_);
                  j["position"] = shape.position;
                  j["rotation"] = glm::degrees(shape.rotation);
                  j["scale"] = shape.scale;
@@ -118,12 +118,12 @@ namespace nlohmann {
 
         nlohmann::json& j_shapes = j["shapes"];
         for (const std::unique_ptr<Shape>& shape : value.shapes) {
-            const std::string type = shape_type(*shape);
-            nlohmann::json j;
-            map_shape_savers.at(type)(*shape, j);
-            j["type"] = type;
-            j["material"] = shape->material;
-            j_shapes.emplace_back(std::move(j));
+            const std::string& type = shape_type(*shape);
+            nlohmann::json j_shape;
+            map_shape_savers.at(type)(*shape, j_shape);
+            j_shape["type"] = type;
+            j_shape["material"] = shape->material;
+            j_shapes.emplace_back(std::move(j_shape));
         }
     }
 

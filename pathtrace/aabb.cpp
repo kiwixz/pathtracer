@@ -3,8 +3,8 @@
 #include <algorithm>
 
 namespace pathtrace {
-    Aabb::Aabb(const glm::dvec3& bottom_left, const glm::dvec3& top_right) :
-        bottom_left{bottom_left}, top_right{top_right}
+    Aabb::Aabb(const glm::dvec3& _bottom_left, const glm::dvec3& _top_right) :
+        bottom_left{_bottom_left}, top_right{_top_right}
     {}
 
     std::optional<double> Aabb::intersect(const Ray& ray) const
