@@ -26,6 +26,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "" FORCE)
 endif ()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
 set(CMAKE_CXX_FLAGS
     "${CMAKE_CXX_FLAGS}       \
     -ffast-math               \
