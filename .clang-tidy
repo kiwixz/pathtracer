@@ -2,6 +2,7 @@
 
 ---
 Checks: "-*  ,\
+boost-*  ,\
 bugprone-*  ,\
 cert-*  ,\
 clang-analyzer-*  ,\
@@ -18,7 +19,15 @@ google-*  ,\
 -google-readability-namespace-comments  ,\
 -google-readability-todo  ,\
 -google-runtime-references  ,\
+hicpp-*  ,\
+-hicpp-braces-around-statements  ,\
+-hicpp-member-init  ,\
+llvm-*  ,\
+-llvm-include-order  ,\
+-llvm-namespace-comment  ,\
 modernize-*  ,\
+misc-*  ,\
+mpi-*  ,\
 performance-*  ,\
 portability-*  ,\
 readability-*  ,\
