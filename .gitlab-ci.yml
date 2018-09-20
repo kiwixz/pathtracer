@@ -43,6 +43,7 @@ docker:
             docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
                 echo -e "\n\e[1;97;44m > Dumping system packages... \e[0m"
                 pacman --color=always -Q
+
                 echo -e "\n\e[1;97;44m > Dumping vcpkg packages... \e[0m"
                 vcpkg list
             '
@@ -56,11 +57,13 @@ build:
             CXXFLAGS+="-isystem /opt/vcpkg/installed/x64-linux/include -L/opt/vcpkg/installed/x64-linux/lib "
             CXXFLAGS+="-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=leak -fsanitize=undefined "
             export CLICOLOR_FORCE="1"
+
             echo -e "\n\e[1;97;44m > Building debug... \e[0m"
             mkdir -p "build/debug"
             cd "build/debug"
             cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=Debug" "../.."
             make -j$(nproc) -O
+
             echo -e "\n\e[1;97;44m > Building release... \e[0m"
             mkdir "../release"
             cd "../release"
@@ -72,6 +75,14 @@ misc:
     stage: build
     script: |
         docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+            echo -e "\e[1;97;44m > Checking with clang-tidy... \e[0m"
+            CXXFLAGS="-isystem /opt/vcpkg/installed/x64-linux/include -L/opt/vcpkg/installed/x64-linux/lib"
+            mkdir "build"
+            cd "build"
+            cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=RelWithDebInfo" ".."
+            cd ..
+            clang-tidy -p "build/compile_commands.json" $(find -path "build" -prune -o -name '*.cpp')
+
             echo -e "\e[1;97;44m > Formatting with clang-format... \e[0m"
             err=0
             for f in **/*.h **/*.cpp **/*.inl; do

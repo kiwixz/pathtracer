@@ -1,0 +1,7 @@
+# clang-tidy 6.0.0
+
+---
+Checks: "-*  ,\
+performance-*  ,\
+"
+...
