@@ -3,6 +3,7 @@
 ---
 Checks: "-*  ,\
 bugprone-*  ,\
+cert-*  ,\
 clang-analyzer-*  ,\
 cppcoreguidelines-*  ,\
 -cppcoreguidelines-pro-bounds-constant-array-index  ,\
@@ -11,6 +12,12 @@ cppcoreguidelines-*  ,\
 -cppcoreguidelines-pro-type-reinterpret-cast  ,\
 -cppcoreguidelines-pro-type-static-cast-downcast  ,\
 -cppcoreguidelines-pro-type-union-access  ,\
+google-*  ,\
+-google-build-using-namespace  ,\
+-google-readability-braces-around-statements  ,\
+-google-readability-namespace-comments  ,\
+-google-readability-todo  ,\
+-google-runtime-references  ,\
 modernize-*  ,\
 performance-*  ,\
 portability-*  ,\
