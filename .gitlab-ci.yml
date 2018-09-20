@@ -41,6 +41,8 @@ docker:
         - docker save -o "$CACHE_DIR/docker.tar" "$REQUIRED_IMAGES" $(docker history -q "$DOCKER_IMAGE" | grep -v "<")
         - |
             docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+                set -e
+
                 echo -e "\n\e[1;97;44m > Dumping system packages... \e[0m"
                 pacman --color=always -Q
 
@@ -53,6 +55,8 @@ build:
     stage: build
     script: |
         docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+            set -e
+
             export CXXFLAGS="-fdiagnostics-color=always "
             CXXFLAGS+="-isystem /opt/vcpkg/installed/x64-linux/include -L/opt/vcpkg/installed/x64-linux/lib "
             CXXFLAGS+="-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=leak -fsanitize=undefined "
@@ -75,6 +79,8 @@ misc:
     stage: build
     script: |
         docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+            set -e
+
             echo -e "\n\e[1;97;44m > Checking with clang-tidy... \e[0m"
             export CXXFLAGS="-isystem /opt/vcpkg/installed/x64-linux/include -Wno-unknown-warning-option"
             mkdir "build"
@@ -108,14 +114,18 @@ pages:
         - apk add doxygen git graphviz ttf-freefont
     script:
         - |
-            for branch in master; do
-                echo -e "\n\e[1;97;44m > Generating documentation for $branch... \e[0m"
-                git checkout "origin/$branch"
-                mkdir -p "build/doc"
-                doxygen
-                mkdir -p "build/public/$branch"
-                mv "build/doc/html" "build/public/$branch/doc"
-            done
+            bash -l -c '
+                set -e
+
+                for branch in master; do
+                    echo -e "\n\e[1;97;44m > Generating documentation for $branch... \e[0m"
+                    git checkout "origin/$branch"
+                    mkdir -p "build/doc"
+                    doxygen
+                    mkdir -p "build/public/$branch"
+                    mv "build/doc/html" "build/public/$branch/doc"
+                done
+            '
         - mv "build/public" "public"
     artifacts:
         paths:
