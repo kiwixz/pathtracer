@@ -82,7 +82,7 @@ misc:
             cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=RelWithDebInfo" ".."
             cd ..
             SRC="$(find -name "*.cpp" -not -path "./build/*")"
-            clang-tidy -quiet -p "build/compile_commands.json" $SRC
+            clang-tidy -quiet -p "build/compile_commands.json" -warnings-as-errors "*" $SRC
 
             echo -e "\e[1;97;44m > Formatting with clang-format... \e[0m"
             err=0
