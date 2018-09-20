@@ -76,12 +76,13 @@ misc:
     script: |
         docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
             echo -e "\e[1;97;44m > Checking with clang-tidy... \e[0m"
-            export CXXFLAGS="-isystem /opt/vcpkg/installed/x64-linux/include -L/opt/vcpkg/installed/x64-linux/lib"
+            export CXXFLAGS="-isystem /opt/vcpkg/installed/x64-linux/include -Wno-unknown-warning-option"
             mkdir "build"
             cd "build"
             cmake "-DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake" "-DCMAKE_BUILD_TYPE=RelWithDebInfo" ".."
             cd ..
-            clang-tidy -p "build/compile_commands.json" $(find -path "build" -prune -o -name '*.cpp')
+            SRC="$(find -name '*.cpp' -not -path "./build/*")"
+            clang-tidy -quiet -p "build/compile_commands.json" $SRC
 
             echo -e "\e[1;97;44m > Formatting with clang-format... \e[0m"
             err=0
