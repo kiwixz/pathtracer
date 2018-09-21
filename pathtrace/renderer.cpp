@@ -150,9 +150,10 @@ namespace pathtrace {
         resize_thread_pool(nr_threads);
     }
 
-    void Renderer::resize_thread_pool(size_t nr_threads_)
+    void Renderer::resize_thread_pool(size_t nr_threads)
     {
-        size_t nr_threads = (nr_threads_ ? nr_threads_ : std::thread::hardware_concurrency() - 1);
+        if (!nr_threads)
+            nr_threads = std::thread::hardware_concurrency();
         if (!nr_threads)
             throw std::runtime_error{"could not guess number of threads"};
         thread_pool_.resize(nr_threads);
