@@ -68,7 +68,7 @@ core:
                 SRC="$(find -name "*.cpp" -not -path "./build/*")"
                 clang-tidy -quiet -p "build/compile_commands.json" -warnings-as-errors "*" $SRC
 
-                echo -e "\n\e[1;97;44m > Formatting with clang-format... \e[0m"
+                echo -e "\n\e[1;97;44m > Checking style with clang-format... \e[0m"
                 err=0
                 for f in **/*.h **/*.cpp **/*.inl; do
                     diff=$(clang-format "$f" | diff -d --color=always "$f" -)
@@ -79,9 +79,6 @@ core:
                         ((++err))
                     fi
                 done
-                if [[ $err -eq 0 ]]; then
-                    echo -e "\e[1mEverything is already formatted!\e[0m"
-                fi
                 exit $err
             '
 
