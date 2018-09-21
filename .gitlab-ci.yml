@@ -91,7 +91,7 @@ pages:
     stage: deploy
     before_script:
         - apk update
-        - apk add doxygen git graphviz ttf-freefont
+        - apk add bash doxygen git graphviz ttf-freefont
     script:
         - |
             bash -l -c '
