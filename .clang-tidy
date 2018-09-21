@@ -34,4 +34,14 @@ readability-*  ,\
 -readability-braces-around-statements  ,\
 -readability-implicit-bool-conversion  ,\
 "
+
+WarningsAsErrors: ""
+HeaderFilterRegex: ""
+AnalyzeTemporaryDtors: false
+FormatStyle: file
+CheckOptions:
+  - key: hicpp-move-const-arg.CheckTriviallyCopyableMove
+    value: 0
+  - key:  performance-move-const-arg.CheckTriviallyCopyableMove
+    value: 0
 ...
