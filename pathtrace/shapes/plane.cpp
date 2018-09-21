@@ -1,11 +1,11 @@
 #include "plane.h"
-#include <pathtrace/math.h>
+#include <pathtrace/matrix.h>
 #include <glm/geometric.hpp>
 
 namespace pathtrace::shapes {
     void Plane::bake()
     {
-        up = math::euler_rotation(rotation) * glm::dvec4{0, 1, 0, 1};
+        up = matrix::euler_rotation(rotation) * glm::dvec4{0, 1, 0, 1};
     }
 
     Intersection Plane::intersect(const Ray& ray) const

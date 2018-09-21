@@ -1,5 +1,5 @@
 #include "mesh.h"
-#include <pathtrace/math.h>
+#include <pathtrace/matrix.h>
 
 // #define TINYOBJLOADER_USE_DOUBLE  // should work but make tinyobjloader go crazy
 #include <tiny_obj_loader.h>
@@ -7,7 +7,7 @@
 namespace pathtrace::shapes {
     void Mesh::bake()
     {
-        glm::dmat4 transformation = math::transform(position, rotation, scale);
+        glm::dmat4 transformation = matrix::transform(position, rotation, scale);
         glm::dmat4 pseudo_transformation = glm::transpose(glm::inverse(transformation));  // do not deform normals etc
 
         std::vector<Triangle> transformed_triangles;

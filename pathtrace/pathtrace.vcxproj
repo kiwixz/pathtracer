@@ -172,7 +172,7 @@
     <ClCompile Include="serializers.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="shapes\sphere.cpp" />
-    <ClCompile Include="math.cpp" />
+    <ClCompile Include="matrix.cpp" />
     <ClCompile Include="shapes\triangle.cpp" />
     <ClCompile Include="thread_pool.cpp" />
   </ItemGroup>
@@ -189,7 +189,7 @@
     <ClInclude Include="serializers.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="shapes\sphere.h" />
-    <ClInclude Include="math.h" />
+    <ClInclude Include="matrix.h" />
     <ClInclude Include="shapes\triangle.h" />
     <ClInclude Include="thread_pool.h" />
   </ItemGroup>

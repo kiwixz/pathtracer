@@ -100,7 +100,7 @@ namespace pathtracer {
 
             LodePNGInfo& info = state.info_png;
             if (args.gamma) {
-                uint32_t gamma = static_cast<uint32_t>(1 / args.gamma * 100'000);
+                auto gamma = static_cast<uint32_t>(1 / args.gamma * 100'000);
                 gamma = endian::host_to_big(gamma);
                 lodepng_chunk_create(&info.unknown_chunks_data[0], &info.unknown_chunks_size[0],
                                      sizeof(gamma), "gAMA", reinterpret_cast<const uint8_t*>(&gamma));
@@ -134,7 +134,7 @@ namespace pathtracer {
         }
     }  // namespace
 
-    int App::main(int argc, const char** argv) noexcept
+    int App::main(int argc, char** argv) noexcept
     {
         spdlog::stderr_color_mt("stderr");
 #ifdef _DEBUG
@@ -152,7 +152,7 @@ namespace pathtracer {
         return 0;
     }
 
-    void App::main_impl(int argc, const char** argv)
+    void App::main_impl(int argc, char** argv)
     {
         AppArgs args;
 
@@ -183,7 +183,9 @@ namespace pathtracer {
             fmt::print("{}", options.help({}));
             return;
         }
-        cxxopts::ParseResult parse = options.parse(argc, argv);
+
+        const char** const_argv = const_cast<const char**>(argv);  // will not be required with cxxopts 2.1.1  // NOLINT
+        cxxopts::ParseResult parse = options.parse(argc, const_argv);
         if (args.help) {
             fmt::print("{}", options.help({}));
             return;
