@@ -1,10 +1,10 @@
-#include "math.h"
+#include "matrix.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/transform.hpp>
 
-namespace pathtrace::math {
+namespace pathtrace::matrix {
     glm::dmat4 euler_rotation(const glm::dvec3& rotation)
     {
         return glm::yawPitchRoll(-rotation.x,
@@ -16,4 +16,4 @@ namespace pathtrace::math {
     {
         return glm::translate(translation) * euler_rotation(rotation) * glm::scale(scale);
     }
-}  // namespace pathtrace::math
+}  // namespace pathtrace::matrix

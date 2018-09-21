@@ -1,6 +1,6 @@
 #include "renderer.h"
 #include <pathtrace/fast_rand.h>
-#include <pathtrace/math.h>
+#include <pathtrace/matrix.h>
 #include <glm/gtc/constants.hpp>
 
 namespace pathtrace {
@@ -29,9 +29,9 @@ namespace pathtrace {
         /// max are not inclusive
         void RendererWork::operator()(int x_min, int x_max, int y_min, int y_max)
         {
-            glm::dmat4 projection = glm::transpose(math::transform(scene_.camera.position,
-                                                                   -scene_.camera.rotation,
-                                                                   1.0 / scene_.camera.scale));
+            glm::dmat4 projection = glm::transpose(matrix::transform(scene_.camera.position,
+                                                                     -scene_.camera.rotation,
+                                                                     1.0 / scene_.camera.scale));
             double aspect_ratio = scene_.settings.width / static_cast<double>(scene_.settings.height);
             double fov_ratio = 2 * tan(scene_.camera.field_of_view / 2);
 
