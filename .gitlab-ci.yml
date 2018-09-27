@@ -59,6 +59,21 @@ core:
             docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
                 set -e
 
+                echo -e "\n\e[1;97;44m > Checking style with clang-format... \e[0m"
+                err=0
+                while IFS= read -r f; do
+                    diff=$(clang-format "$f" | diff -d --color=always "$f" - ||:)
+                    if [[ ! -z "$diff" ]]; then
+                        echo -e "\e[1m$f\e[0m"
+                        echo "$diff"
+                        echo
+                        ((++err))
+                    fi
+                done < <(find -type f \( -iname "*.h" -o -iname "*.cpp" -o -iname "*.inl" \))
+                if [[ "$err" -ne "0" ]]; then
+                    exit "$err"
+                fi
+
                 echo -e "\n\e[1;97;44m > Checking with clang-tidy... \e[0m"
                 export CXXFLAGS="-isystem /opt/vcpkg/installed/x64-linux/include -Wno-unknown-warning-option"
                 mkdir "build"
@@ -67,19 +82,6 @@ core:
                 cd ..
                 SRC="$(find -name "*.cpp" -not -path "./build/*")"
                 clang-tidy -quiet -p "build/compile_commands.json" -warnings-as-errors "*" $SRC
-
-                echo -e "\n\e[1;97;44m > Checking style with clang-format... \e[0m"
-                err=0
-                for f in **/*.h **/*.cpp **/*.inl; do
-                    diff=$(clang-format "$f" | diff -d --color=always "$f" - ||:)
-                    if [[ ! -z "$diff" ]]; then
-                        echo -e "\e[1m$f\e[0m"
-                        echo "$diff"
-                        echo
-                        ((++err))
-                    fi
-                done
-                exit $err
             '
 
         - echo -e "\n\e[1;97;44m > Saving docker image... \e[0m"
