@@ -7,7 +7,7 @@ stages:
 variables:
     CACHE_DIR: "build/cache"
     DOCKER_IMAGE: "gitlab_${CI_PROJECT_NAME}_${CI_PIPELINE_ID}"
-    REQUIRED_IMAGES: "kiwixz/arch-vcpkg:2018-08-05"
+    REQUIRED_IMAGES: "kiwixz/arch-vcpkg:2018-09-30"
 
 services:
     - docker:stable-dind
