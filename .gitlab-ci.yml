@@ -28,7 +28,7 @@ core:
         - docker build -t "$DOCKER_IMAGE" --pull .
 
         - |
-            docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+            docker run --rm "$DOCKER_IMAGE" /bin/bash -c '
                 set -e
 
                 echo -e "\n\e[1;97;44m > Dumping system packages... \e[0m"
@@ -56,7 +56,7 @@ core:
             '
 
         - |
-            docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+            docker run --rm "$DOCKER_IMAGE" /bin/bash -c '
                 set -e
 
                 echo -e "\n\e[1;97;44m > Checking style with clang-format... \e[0m"
@@ -96,7 +96,7 @@ pages:
         - apk add bash doxygen git graphviz ttf-freefont
     script:
         - |
-            bash -l -c '
+            bash -c '
                 set -e
 
                 for branch in master; do
