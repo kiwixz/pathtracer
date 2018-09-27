@@ -37,7 +37,7 @@ core:
                 echo -e "\n\e[1;97;44m > Dumping vcpkg packages... \e[0m"
                 vcpkg list
 
-                export CXXFLAGS="-fdiagnostics-color=always "
+                export CXXFLAGS="-fdiagnostics-color=always -Werror "
                 CXXFLAGS+="-isystem /opt/vcpkg/installed/x64-linux/include -L/opt/vcpkg/installed/x64-linux/lib "
                 CXXFLAGS+="-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=leak -fsanitize=undefined "
                 export CLICOLOR_FORCE="1"
