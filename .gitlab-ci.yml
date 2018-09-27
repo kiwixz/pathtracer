@@ -71,7 +71,7 @@ core:
                 echo -e "\n\e[1;97;44m > Checking style with clang-format... \e[0m"
                 err=0
                 for f in **/*.h **/*.cpp **/*.inl; do
-                    diff=$(clang-format "$f" | diff -d --color=always "$f" -)
+                    diff=$(clang-format "$f" | diff -d --color=always "$f" - ||:)
                     if [[ ! -z "$diff" ]]; then
                         echo -e "\e[1m$f\e[0m"
                         echo "$diff"
