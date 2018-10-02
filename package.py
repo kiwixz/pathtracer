@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 APP_NAME = "pathtracer"
-BUILD_DIR = Path("build")
+OUTPUT_FILE = f"build/{APP_NAME}.zip"
 VSWHERE_VERSION = "2.5.2"
 
 
@@ -78,6 +78,14 @@ def copy_app(package_dir):
     copy(Path("build") / "x64-Release", package_dir, "*.exe")
 
 
+def zip_app(package_dir):
+    logging.info(f"zip {APP_NAME}")
+    with zipfile.ZipFile(OUTPUT_FILE, "w", zipfile.ZIP_LZMA) as zipf:
+        for f in package_dir.glob("**/*"):
+            if os.path.isfile(f):
+                zipf.write(f, f"{APP_NAME}/{f.relative_to(package_dir)}")
+
+
 if __name__ == "__main__":
     logging.basicConfig(datefmt="%H:%M:%S",
                         format="[%(asctime)s][%(levelname)s] %(message)s",
@@ -90,10 +98,6 @@ if __name__ == "__main__":
         copy_redist(vs_path, package_dir)
         build_app(vs_path)
         copy_app(package_dir)
-
-        with zipfile.ZipFile(f"{BUILD_DIR}/{APP_NAME}.zip", "w", zipfile.ZIP_LZMA) as zipf:
-            for f in package_dir.glob("**/*"):
-                if os.path.isfile(f):
-                    zipf.write(f, f"{APP_NAME}/{f.relative_to(package_dir)}")
+        zip_app(package_dir)
     finally:
         shutil.rmtree(package_dir)
