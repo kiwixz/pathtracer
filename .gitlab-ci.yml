@@ -7,7 +7,7 @@ stages:
 variables:
     CACHE_DIR: "build/cache"
     DOCKER_IMAGE: "gitlab_${CI_PROJECT_NAME}_${CI_PIPELINE_ID}"
-    REQUIRED_IMAGES: "kiwixz/arch-vcpkg:2018-08-05"
+    REQUIRED_IMAGES: "kiwixz/arch-vcpkg:2018-09-30"
 
 services:
     - docker:stable-dind
@@ -28,7 +28,7 @@ core:
         - docker build -t "$DOCKER_IMAGE" --pull .
 
         - |
-            docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+            docker run --rm "$DOCKER_IMAGE" /bin/bash -c '
                 set -e
 
                 echo -e "\n\e[1;97;44m > Dumping system packages... \e[0m"
@@ -37,7 +37,7 @@ core:
                 echo -e "\n\e[1;97;44m > Dumping vcpkg packages... \e[0m"
                 vcpkg list
 
-                export CXXFLAGS="-fdiagnostics-color=always "
+                export CXXFLAGS="-fdiagnostics-color=always -Werror "
                 CXXFLAGS+="-isystem /opt/vcpkg/installed/x64-linux/include -L/opt/vcpkg/installed/x64-linux/lib "
                 CXXFLAGS+="-fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=leak -fsanitize=undefined "
                 export CLICOLOR_FORCE="1"
@@ -56,8 +56,23 @@ core:
             '
 
         - |
-            docker run --rm "$DOCKER_IMAGE" /bin/bash -l -c '
+            docker run --rm "$DOCKER_IMAGE" /bin/bash -c '
                 set -e
+
+                echo -e "\n\e[1;97;44m > Checking style with clang-format... \e[0m"
+                err=0
+                while IFS= read -r f; do
+                    diff=$(clang-format "$f" | diff -d --color=always "$f" - ||:)
+                    if [[ ! -z "$diff" ]]; then
+                        echo -e "\e[1m$f\e[0m"
+                        echo "$diff"
+                        echo
+                        ((++err))
+                    fi
+                done < <(find -type f \( -iname "*.h" -o -iname "*.cpp" -o -iname "*.inl" \))
+                if [[ "$err" -ne "0" ]]; then
+                    exit "$err"
+                fi
 
                 echo -e "\n\e[1;97;44m > Checking with clang-tidy... \e[0m"
                 export CXXFLAGS="-isystem /opt/vcpkg/installed/x64-linux/include -Wno-unknown-warning-option"
@@ -67,19 +82,6 @@ core:
                 cd ..
                 SRC="$(find -name "*.cpp" -not -path "./build/*")"
                 clang-tidy -quiet -p "build/compile_commands.json" -warnings-as-errors "*" $SRC
-
-                echo -e "\n\e[1;97;44m > Checking style with clang-format... \e[0m"
-                err=0
-                for f in **/*.h **/*.cpp **/*.inl; do
-                    diff=$(clang-format "$f" | diff -d --color=always "$f" -)
-                    if [[ ! -z "$diff" ]]; then
-                        echo -e "\e[1m$f\e[0m"
-                        echo "$diff"
-                        echo
-                        ((++err))
-                    fi
-                done
-                exit $err
             '
 
         - echo -e "\n\e[1;97;44m > Saving docker image... \e[0m"
@@ -94,7 +96,7 @@ pages:
         - apk add bash doxygen git graphviz ttf-freefont
     script:
         - |
-            bash -l -c '
+            bash -c '
                 set -e
 
                 for branch in master; do
