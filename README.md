@@ -11,7 +11,7 @@ The aim of this project is to implement a pathtracer with a clean and easily und
 ![](scenes/cornell.png)
 Cornell Box; 50000 spp; 3h30
 
-![](scenes/bunny.pngg)
+![](scenes/bunny.png)
 Bunny; 3000 spp; 6h00
 
 ![](scenes/refractive_bunny.png)
