@@ -1,66 +1,55 @@
-cmake_minimum_required(VERSION 3.8)
-project(pathtracer)
+cmake_minimum_required(VERSION 3.12)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+include("doc_target")
+include("vcpkg")
+include("set_defaults")
 
 
-function ("pathtracer_lib" name)
-    file(GLOB_RECURSE src "${name}/*.cpp")
-    list(FILTER src EXCLUDE REGEX "stdafx")
-    add_library("${name}" "${src}")
-endfunction ()
-
-function ("pathtracer_exe" name)
-    cmake_parse_arguments(args "" "NAME" "DEPENDS;LIBRARIES" "${ARGN}")
-    if (NOT "${args_UNPARSED_ARGUMENTS}" STREQUAL "")
-        message(FATAL_ERROR "pathtracer_exe: unrecognized options: ${args_UNPARSED_ARGUMENTS}")
-    endif ()
-
-    file(GLOB_RECURSE src "${name}/*.cpp")
-    list(FILTER src EXCLUDE REGEX "stdafx")
-    add_executable("${name}" "${src}")
-    add_dependencies("${name}" "${args_DEPENDS}")
-    target_link_libraries("${name}" "${args_LIBRARIES}")
-endfunction ()
+option(BUILD_TESTING "Build tests" ON)
+option(DOC_GENERATION "Add target 'doc' to generate documentation" OFF)
+option(USE_VCPKG "Use vcpkg toolchain to install and find libs" ON)
 
 
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "" FORCE)
+set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
+set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS}" CACHE STRING "")
+set_defaults_tools_cpp()
+
+if (USE_VCPKG)
+    vcpkg_setup("2019.11")
 endif ()
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
-set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS}       \
-    -ffast-math               \
-    -Wall -Wextra -Wpedantic  \
-    -Wcast-align -Wcast-qual -Wdisabled-optimization -Wduplicated-branches             \
-    -Wduplicated-cond -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations       \
-    -Wmissing-include-dirs -Wnoexcept -Wnull-dereference -Wold-style-cast              \
-    -Woverloaded-virtual -Wredundant-decls -Wrestrict -Wshadow -Wstrict-null-sentinel  \
-    -Wundef -Wuseless-cast -Wzero-as-null-pointer-constant"
+
+project("pathtracer"
+    VERSION 0.0.0
+    LANGUAGES CXX)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set_defaults_flags_cpp()
+
+if (BUILD_TESTING)
+    enable_testing()
+    find_package("Python3" REQUIRED "Interpreter")
+    add_test(NAME "check_clang_format"
+        COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/check_clang_format.py"
+    )
+    add_test(NAME "check_clang_tidy"
+        COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/check_clang_tidy.py" "${PROJECT_BINARY_DIR}"
+    )
+endif ()
+
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
+set(subdirs
+    "pathtrace"
+
+    "pathtracer"
 )
-set(CMAKE_CXX_STANDARD "17")
-set(CMAKE_CXX_STANDARD_REQUIRED "ON")
 
-find_package(Threads REQUIRED)
-find_package(fmt REQUIRED)
-find_package(glm REQUIRED)
-find_package(spdlog REQUIRED)
-find_package(tinyobjloader REQUIRED)
 
-include_directories("${CMAKE_SOURCE_DIR}")
+if (DOC_GENERATION)
+    doc_target(DIRS ${subdirs})
+endif ()
 
-pathtracer_lib("pathtrace")
-
-pathtracer_exe("pathtracer"
-    DEPENDS "pathtrace"
-    LIBRARIES
-        "pathtrace"
-
-        "stdc++fs"
-        "Threads::Threads"
-
-        "fmt::fmt"
-        "glm"
-        "lodepng"
-        "spdlog::spdlog"
-        "tinyobjloader"
-)
+foreach(dir ${subdirs})
+    add_subdirectory("${dir}")
+endforeach()

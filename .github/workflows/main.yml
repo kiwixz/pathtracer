@@ -1,0 +1,105 @@
+on: [create, pull_request, push]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: ["Debug", "Release"]
+        cxx: ["g++", "clang++"]
+    runs-on: ubuntu-latest
+    container:
+      image: kiwixz/ci-cpp:2019-12-08
+    steps:
+      - name: Install system dependencies
+        run: |
+          pacman --color=always --needed --noconfirm -Sy  \
+              git openssh  \
+              clang cmake gcc lld nasm ninja python
+
+      - name: Dump packages versions
+        run: |
+          pacman --color=always -Q
+
+      - name: Checkout
+        run: |
+          git clone "https://github.com/${{ github.repository }}" "./"
+          git checkout "${{ github.sha }}"
+
+      - name: Configure
+        env:
+          CXX: ${{ matrix.cxx }}
+          CXXFLAGS: -fdiagnostics-color=always
+          LDFLAGS: -fdiagnostics-color=always
+        run: |
+          ln -s "/opt/vcpkg"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
+
+      - name: Dump libraries versions
+        run: |
+          vcpkg list
+
+      - name: Build
+        run: |
+          ninja -C "build"
+
+      - name: Test
+        env:
+          ASAN_OPTIONS: check_initialization_order=1:detect_stack_use_after_return=1
+          UBSAN_OPTIONS: print_stacktrace=1
+        run: |
+          cd "build"
+          ctest --verbose
+
+
+  build_windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: ["Debug", "Release"]
+        cxx: ["cl"]
+    runs-on: windows-latest
+    env:
+      VCVARS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
+    steps:
+      - name: Install system dependencies
+        run: |
+          choco install llvm nasm
+
+      - name: Checkout
+        run: |
+          git clone "https://github.com/${{ github.repository }}" "."
+          git checkout "${{ github.sha }}"
+
+      - name: Configure
+        shell: cmd
+        run: |
+          if "${{ matrix.cxx }}"=="cl" (
+            set "CC=cl"
+            set "CXX=cl"
+          )
+          if "${{ matrix.cxx }}"=="clang" (
+            set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
+            set "CC=clang"
+            set "CXX=clang++"
+          )
+          call "%VCVARS%"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
+
+      - name: Build
+        shell: cmd
+        run: |
+          call "%VCVARS%"
+          ninja -C "build"
+
+      - name: Test
+        shell: cmd
+        run: |
+          call "%VCVARS%"
+          cd "build"
+          if "${{ matrix.cxx }}"=="clang" (
+            set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
+            ctest --verbose
+          ) else (
+            ctest --verbose -E "check_clang_.*"
+          )

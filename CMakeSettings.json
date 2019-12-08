@@ -1,0 +1,92 @@
+{
+  "configurations": [
+    {
+      "name": "debug",
+      "configurationType": "Debug",
+      "generator": "Ninja",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}/build/${name}",
+      "enableMicrosoftCodeAnalysis": false,
+      "cmakeCommandArgs": "--no-warn-unused-cli",
+      "ctestCommandArgs": "--output-on-failure -j 4 -E check_clang_tidy",
+      "variables": [
+        {
+          "name": "DOC_GENERATION",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "release",
+      "configurationType": "Release",
+      "generator": "Ninja",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}/build/${name}",
+      "enableMicrosoftCodeAnalysis": false,
+      "cmakeCommandArgs": "--no-warn-unused-cli",
+      "ctestCommandArgs": "--output-on-failure -j 4 -E check_clang_tidy",
+      "variables": [
+        {
+          "name": "DOC_GENERATION",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "clang-debug",
+      "configurationType": "Debug",
+      "generator": "Ninja",
+      "inheritEnvironments": [ "clang_cl_x64" ],
+      "buildRoot": "${projectDir}/build/${name}",
+      "enableClangTidyCodeAnalysis": false,
+      "cmakeCommandArgs": "--no-warn-unused-cli",
+      "ctestCommandArgs": "--output-on-failure -j 4",
+      "variables": [
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "clang",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "clang++",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "DOC_GENERATION",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "clang-release",
+      "configurationType": "Release",
+      "generator": "Ninja",
+      "inheritEnvironments": [ "clang_cl_x64" ],
+      "buildRoot": "${projectDir}/build/${name}",
+      "enableClangTidyCodeAnalysis": false,
+      "cmakeCommandArgs": "--no-warn-unused-cli",
+      "ctestCommandArgs": "--output-on-failure -j 4",
+      "variables": [
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "clang",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "clang++",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "DOC_GENERATION",
+          "value": "True",
+          "type": "BOOL"
+        }
+      ]
+    }
+  ]
+}

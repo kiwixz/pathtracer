@@ -1,6 +1,6 @@
 /build/
+/vcpkg/
 
-# Visual Studio
 .vs/
 .vscode/
-*.user
+__pycache__/

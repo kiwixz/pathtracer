@@ -184,8 +184,7 @@ namespace pathtracer {
             return;
         }
 
-        const char** const_argv = const_cast<const char**>(argv);  // will not be required with cxxopts 2.1.1  // NOLINT
-        cxxopts::ParseResult parse = options.parse(argc, const_argv);
+        cxxopts::ParseResult parse = options.parse(argc, argv);
         if (args.help) {
             fmt::print("{}", options.help({}));
             return;

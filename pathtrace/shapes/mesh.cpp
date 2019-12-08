@@ -39,8 +39,9 @@ namespace pathtrace::shapes {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
         std::vector<tinyobj::material_t> materials;
+        std::string warn;
         std::string err;
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, path.c_str()))
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str()))
             throw std::runtime_error{"could not load obj file: " + path + ": " + err};
 
         triangles.clear();
